@@ -1,0 +1,1 @@
+[20-Jun-2024 23:44:53 America/Mexico_City] PHP Warning:  mysqli_fetch_array() expects parameter 1 to be mysqli_result, boolean given in /home/tbocampana/public_html/toro/mtto/admin/callcenter/ajaxClientesRuta.php on line 51

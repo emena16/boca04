@@ -1,0 +1,2 @@
+{"id_prod":"6605","precioListaCatalogo":"147.6000","sumaDescuentosAntesCP":"4.0000","sumaDescuentoDespCP":"3.0000","costoPactadoDB":"141.6960","costoIngresoDB":"137.4451"}
+

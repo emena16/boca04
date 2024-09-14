@@ -1,0 +1,27 @@
+.desplazado-derecha {
+    width: 97%;
+    border: 1px solid black; 
+    margin-top: 20px;
+    margin-left: 3.5%;
+    padding: 15px;
+    background-color: white;
+}
+/* Nuevo estilo para el card-principal */
+.card-principal {
+    width: 96%;
+    /* border: 1px solid black;  */
+    margin-top: 20px;
+    margin-left: 3.5%;
+    padding: 15px;
+    background-color: white;
+    /* quitamos el borde de la card */
+    border: none;   
+}
+.select2-results__option {
+    padding: 2px 10px;
+}
+
+.select2-results__option--highlighted {
+    background-color: #dfdedb;
+    color: white; 
+}

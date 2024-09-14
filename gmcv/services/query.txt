@@ -1,0 +1,25 @@
+INSERT INTO prod_compra (
+            id_compra,
+            id_prod,
+            sugerido,
+            cantidad,
+            id_status,
+            cant_solicitada,
+            cant_no_recibida,
+            cant_ingresada,
+            costo_unitario,
+            prod_agregado,
+            escaner
+        ) VALUES (
+            '238689',
+            '890',
+            NULL,
+            '500',
+            '4',
+            '500',
+            '0',
+            '0',
+            '351.75',
+            '1',
+            '0'
+        )

@@ -1,0 +1,7 @@
+[30-Aug-2024 14:23:33 America/Mexico_City] PHP Fatal error:  Uncaught exception 'Exception' with message 'You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'GROUP BY p.id' at line 11' in /home/tbocampana/public_html/toro/mtto/admin/gmcv/models/Model.php:14
+Stack trace:
+#0 /home/tbocampana/public_html/toro/mtto/admin/gmcv/models/GmcvPago.php(218): db::query('SELECT p.id AS ...')
+#1 /home/tbocampana/public_html/toro/mtto/admin/gmcv/controllers/GmcvPagoController.php(192): GmcvPago::getDocumentosByProveedorFechas('92', '2023-01-01', '2025-12-31', NULL)
+#2 /home/tbocampana/public_html/toro/mtto/admin/gmcv/services/mainService.php(31): GmcvPagoController->getDocumentosPagoRangoFechas(Array)
+#3 {main}
+  thrown in /home/tbocampana/public_html/toro/mtto/admin/gmcv/models/Model.php on line 14
