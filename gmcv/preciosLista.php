@@ -105,8 +105,9 @@ table.tablaPequena tbody td {
 
 
 <div class="page-header layout-top-spacing title-header">
-    <div class="pge-title" style="margin-left: 3.5%;">
-        <h3>&nbsp; Precio Lista (GSV) y Descuentos</h3>
+    <div class="pge-title" style="display: flex; justify-content: space-between; align-items: center; margin-left: 3.5%;">
+        <h3>Precio Lista (GSV) y Descuentos</h3>
+        <button type="button" class="btn btn-info btn-circle" data-toggle="modal" data-target="#modalAyuda" style="border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; margin-right: 20px;">?</button>
     </div>
 </div>
 <?php
@@ -197,13 +198,29 @@ $proveedores = $compra->getProveedores();
 
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-4">
                 <div class="page-header layout-top-spacing title-header mt-lg-4">
                     <div class="pge-title">
                         <h5 id="tituloTabla"></h5>
                     </div>
                 </div>
             </div>
+            
+            <!-- Escribimos una tablita para describir los indicadores de colores -->
+            <!-- <div class="col-md-8 mb-3">
+                <table class="tablaPequena" border="1" style="border-collapse: collapse;">
+                    <caption style="caption-side: top; font-weight: bold; margin-bottom: 10px;">
+                        Indicador de colores
+                    </caption>
+                    <tr>
+                        <th style="background-color: yellow;">Precio de lista modificado</th>
+                        <th style="background-color: yellow;">Descuento antes de CP modificado</th>
+                        <th style="background-color: yellow;">Descuento después de CP modificado</th>
+                    </tr>
+                </table>
+            </div>
+             -->
+
         </div>
 
         <div class="row">
@@ -245,7 +262,7 @@ $proveedores = $compra->getProveedores();
                     <div class="col-md-5">
                         <label for="estado">Estado:</label>
                         <select name="estado" id="estado" class="form-control form-control-sm">
-                            <option value="1">Vigente</option>
+                            <option selected value="1">Vigente</option>
                             <option value="0">Inactivo</option>
                         </select>
                     </div>
@@ -319,15 +336,15 @@ $proveedores = $compra->getProveedores();
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <div class="col-md-6">
-                        <label for="estado">Estado:</label>
-                        <select name="estadoAdd" id="estadoAdd" class="form-control form-control-sm">
-                            <option value="1">Vigente</option>
+                    <!-- <div class="col-md-6">
+                        <label for="estado">Estado:</label> -->
+                        <select hidden name="estadoAdd" id="estadoAdd" class="form-control form-control-sm">
+                            <option selected value="1">Vigente</option>
                             <option value="0">Inactivo</option>
                         </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="posteriorCP">Posterior a CP:</label>
+                    <!-- </div> -->
+                    <div class="col-md-12">
+                        <label for="posteriorCP">Descuento posterior a Costo Pactado:</label>
                         <select name="posteriorCPAdd" id="posteriorCPAdd" class="form-control form-control-sm">
                             <option value="1">Sí</option>
                             <option value="0">No</option>
@@ -348,6 +365,42 @@ $proveedores = $compra->getProveedores();
                     <button id="btnGuardarDescuentoNuevo" type="button" class="btn btn-primary">Guardar</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Creamos un modal para mostrar ayuda de que hacer en la vista -->
+<div class="modal fade" id="modalAyuda" tabindex="-1" role="dialog" aria-labelledby="modalAyudaLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <input type="hidden" id="idProveedor" value="" name="idProveedor">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAyudaLabel">Ayuda para la vista de Precio Lista (GSV) y Descuentos</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <table class="tablaPequena" border="1" style="border-collapse: collapse;">
+                            <caption style="caption-side: top; font-weight: bold; margin-bottom: 10px;">
+                                Indicador de colores
+                            </caption>
+                            <tr>
+                                <th style="background-color: yellow;">Precio de lista modificado</th>
+                                <th style="background-color: yellow;">Descuento antes de CP modificado</th>
+                                <th style="background-color: yellow;">Descuento después de CP modificado</th>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -425,6 +478,8 @@ $(document).ready(function() {
         $('#btnDefinirGSV').prop('disabled', true);
         $('#btnAddDescuento').prop('disabled', true);
         $('#btnExportarExcel').prop('disabled', true);
+        //Limpiamos el div de mensajes por si hay alguno
+        $('#divMessage').empty();
 
         //Obtnemos el id del proveedor seleccionado
         var idProveedor = $(this).val();
@@ -666,10 +721,16 @@ $(document).ready(function() {
                 }
             },
             success: function(response) {
-                console.log(response);
+                
                 response = JSON.parse(response);
+                console.log(response);
                 // alert(response.message);
-                messageAlert(response.message, 'success',false);
+                //Esperamos unos 100ms para que mostrar el mensaje de alerta
+                setTimeout(function(){
+                    messageAlert(response.message, 'success',false);
+                }, 100);
+
+
                 //Recargamos la tabla de productos
                 pintaTablaProductosGSV($('#selectProveedor').val(),bodegas);
             },
@@ -1073,6 +1134,8 @@ function pintaTablaProductosGSV(idProveedor, bodegas) {
     //Activamos los botones definir GSV y agregar descuento
     $('#btnDefinirGSV').prop('disabled', false);
     $('#btnAddDescuento').prop('disabled', false);
+    //Limpiamos el div de mensajes por si hay alguno
+    $('#divMessage').empty();
 
     //Al pintar un editable bloqueamos  el boton Defini GSV
     $('#btnDefinirGSV').prop('disabled', false);
@@ -1215,6 +1278,15 @@ function pintaTablaProductosGSV(idProveedor, bodegas) {
             //         position: 'top'
             //     }
             // });
+
+            if(response.message){
+                messageAlert(response.message, response.statusMessage,true);
+                //Desabilitamos los botones de definir GSV y agregar descuento
+                $('#btnDefinirGSV').prop('disabled', true);
+                $('#btnAddDescuento').prop('disabled', true);
+
+
+            }
 
             console.log(response);
 
