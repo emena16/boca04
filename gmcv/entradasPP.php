@@ -166,7 +166,7 @@ table.tablaPequena tbody td {
                 <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button> -->
                 <!-- icono: refresh-cw  Actualizar factura-->
 
-                <button type="button" id="btnEnviarFactura" class="btn btn-success">
+                <button type="button" id="btnEnviarFactura" class="btn btn-primary">
                     <i data-feather="plus-circle"></i> Agregar Factura
                 </button>
 
@@ -285,7 +285,7 @@ table.tablaPequena tbody td {
                 <button type="button" id="btnCerrarCompra" class="btn btn-success">
                     <i data-feather="check-circle"></i> Cerrar Orden de Compra
                 </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"> Cancelar </button>
             </div>
         </div>
     </div>
@@ -686,7 +686,7 @@ include $rutaArchivo;
                     $('#modalIngresarAlmacen .modal-footer').html(
                         '<button class="btn btn-warning" id="btnProcessIngresoFact" type="button" disabled style="display: none;"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...</button>'+
                         '<button type="button" id="btnConfirmaIngresarAlmacen" factura="'+factura.id+'" class="btn btn-success"><i data-feather="check"></i> Confirmar Ingreso de mercancía a Almacén</button>' +
-                        '<button type="button" id="btnCancelIngresoFact" class="btn btn-secondary ml-3" data-dismiss="modal">Cancelar</button>'
+                        '<button type="button" id="btnCancelIngresoFact" class="btn btn-danger ml-3" data-dismiss="modal">Cancelar</button>'
                     );
 
 
@@ -1231,7 +1231,7 @@ include $rutaArchivo;
                 '<div class="d-flex justify-content-end">'+
                 '<button class="ml-3 btn btn-secondary" id="btnRegresar"><i style=" color: #f6fcfb;" data-feather="arrow-left"></i> Regresar Ordenes de compra</button>'+
                 '<button class="ml-3 btn btn-primary" id="btnAgregarProducto"><i style=" color: #f6fcfb;" data-feather="package"></i> Agregar Producto a Orden</button>'+
-                '<button class="ml-3 btn btn-success" id="btnAgregarFactura"><i style=" color: #f6fcfb;" data-feather="file-plus"></i> Añadir Factura</button>'+
+                '<button class="ml-3 btn btn-primary" id="btnAgregarFactura"><i style=" color: #f6fcfb;" data-feather="file-plus"></i> Añadir Factura</button>'+
                 '<input type="hidden" id="idCompra" value="'+id_compra+'">' +
                 '</div></div>'
             );
@@ -1348,7 +1348,7 @@ include $rutaArchivo;
         tabla += '<th>Unidades<br>Facturadas</th>';
         tabla += '<th>Unidades<br>Aceptadas</th>';
         tabla += '<th>Unidades<br>Rechazadas</th>';
-        tabla += '<th>Editar</th>';
+        tabla += '<th>Acciones</th>';
         tabla += '</tr>';
         tabla += '</thead>';
         tabla += '<tbody>';
@@ -1386,7 +1386,7 @@ include $rutaArchivo;
                                 (factura.ingreso_almacen == 0 ?
                                     '<button class="btn btn-info btn-sm ml-2 mt-2 btnEditarFactura" id="'+factura.id+'"><i style=" color: #f6fcfb;" data-feather="edit"></i> Editar</button>'+
                                     '<button class="btn btn-success btn-sm ml-2 mt-2 btnIngresarFactAlmacen" id="'+factura.id+'"><i style=" color: #f6fcfb;" data-feather="edit"></i> Ingresar a almacén</button>' :
-                                    '<button class="btn btn-secondary btn-sm ml-lg-4 mt-2" disabled><i style=" color: #f6fcfb;" data-feather="check-square"></i>&nbsp; Ingresada</button>')
+                                    '<button class="btn btn-info btn-sm ml-lg-4 mt-2" disabled><i style=" color: #f6fcfb;" data-feather="check-square"></i>&nbsp; Ingresada</button>')
                                 '</td>';
                         tabla += '</tr>';
                     });
@@ -1477,7 +1477,7 @@ include $rutaArchivo;
                     tabla += '<th>Monto Neto de la compra solicitada</th>';
                     tabla += '<th>Fecha de Solicitud</th>';
                     tabla += '<th>Facturas</th>';
-                    tabla += '<th>Estado</th>';
+                    tabla += '<th>Dar Entrada</th>';
                     tabla += '</tr>';
                     tabla += '</thead>';
                     tabla += '<tbody>';
