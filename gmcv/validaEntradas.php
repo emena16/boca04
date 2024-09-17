@@ -139,9 +139,9 @@ table.tablaPequena tbody td {
                     <p>¿Deseas cerrar la validación de la orden de compra?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="btnConfirmCloseOrdenCompra">Confirmar cierre de validación</button>
+                <button type="button" class="btn btn-success" id="btnConfirmCloseOrdenCompra">Confirmar terminar validación de la compra</button>
                 <button type="button" class="btn btn-warning" id="btnProcessConfirmClose" style="display: none;"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
@@ -189,6 +189,9 @@ table.tablaPequena tbody td {
 
         //Creamos un evento change para el select de proveedor para obtener las bodegas con compras pendientes
         $('#proveedor').change(function() {
+            //Si detectamos un cambio en el select de proveedor vaciamos la tabla de ordenes de compra
+            $('#divTablaEntradas').html('');
+
             var id_prov = $(this).val();
             if(id_prov != 0) {
                 $.ajax({
@@ -309,7 +312,7 @@ table.tablaPequena tbody td {
             //Agregar otro div para agregar un textarea para agregar la nota de la entrada
             // $('#divTablaEntradas').append('<br><br><div class="mt-4"><label for="lblNotaEntrada">Nota de la Entrada:</label><textarea class="form-control" id="notaEntrada" name="notaEntrada" placeholder="Aquí puedes escribir alguna anotación relacionada con la entrada"></textarea></div>');
             //Agregar un boton para guardar la entrada
-            $('#divTablaEntradas').append('<div class="mt-lg-4"><button class="btn btn-success btn-lg" id="btnFinalizarValidacion" disabled><i style=" color: #f6fcfb;" data-feather="save"></i> Guardar e ingresar a almacén</button></div>');
+            $('#divTablaEntradas').append('<div class="mt-lg-4"><button class="btn btn-success btn-lg" id="btnFinalizarValidacion" disabled><i style=" color: #f6fcfb;" data-feather="save"></i> Confirmar validación de la orden de compra</button></div>');
             //Llamamos a la funcion para pintar la vista de productos restantes
             // pintarTablaRestantes(id_compra);
 
@@ -504,11 +507,14 @@ table.tablaPequena tbody td {
                             '<td class="dt-right"> <span class="shadow-none badge badge-info infoCosto" nombreProducto="'+producto.comercial+'" id="'+ producto.id_prod +'" ><i style=" color: #f6fcfb;  width: 12px; height: 12px;" data-feather="info"></i></span> <input class="costoUnitarioBruto" valorReal="' + parseFloat(producto.costoPactado) + '" type="number" style="width: 105px; text-align: right;" id="costoUnitarioBruto-' + producto.id_prod + '" value="' + parseFloat(producto.costoPactado).toFixed(2) + '" pattern="^[0-9]*\\.?[0-9]{0,2}$" /></td>'+
                             '<td class="dt-right"><input class="costoSubTotalBruto" valorReal="' + (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_facturada)).toFixed(2) + '" type="number" style="width: 115px; text-align: right;" id="costoSubTotalBruto-' + producto.id_prod + '" value="' + (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_facturada)).toFixed(2) + '" pattern="^[0-9]*\\.?[0-9]{0,2}$" /></td>'+
                             '<td class="dt-right"><input class="rechazado" type="number" style="width: 90px; text-align: right;" id="rechazado-' + producto.id_prod + '" value="' + parseFloat(producto.cantidad_rechazada).toFixed(2) + '" pattern="^[0-9]*\\.?[0-9]{0,2}$" /></td>'+
-                            '<td class="dt-right"><input class="descuento disabled-input" valorReal="'+parseFloat(descuento)+'" type="number" style="width: 105px; text-align: right;" id="descuento-' + producto.id_prod + '" value="' + parseFloat(descuento).toFixed(2) + '" pattern="^[0-9]*\\.?[0-9]{0,2}$" /></td>'+
-                            '<td class="dt-right"><input class="costoDespuesRechazo disabled-input" valorReal="'+ (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_aceptada)) +'" type="number" style="width: 115px; text-align: right;" id="costoDespuesRechazo-' + producto.id_prod + '" value="' + (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_aceptada)).toFixed(2) + '" pattern="^[0-9]*\\.?[0-9]{0,2}$" /></td>'+
+                            '<td class="dt-right"><span class="descuento" valorReal="'+parseFloat(descuento)+'" type="number" style="width: 105px; text-align: right;" id="descuento-' + producto.id_prod + '" pattern="^[0-9]*\\.?[0-9]{0,2}$">' + parseFloat(descuento).toFixed(2) + '</span></td>'+
+                            '<td class="dt-right"><span class="costoDespuesRechazo" valorReal="'+ (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_aceptada)) +'" type="number" style="width: 115px; text-align: right;" id="costoDespuesRechazo-' + producto.id_prod + '">' + (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_aceptada)).toFixed(2) + '</span></td>'+
                             '<td><input type="date" style="width: 110px;" id="caducidad-' + producto.id_prod + '" value="'+producto.caducidad+'" /></td>'+
                             '</tr>'
-                        );                        
+                        );
+                        // Campos eliminados:
+                        // '<td class="dt-right"><input class="descuento disabled-input" valorReal="'+parseFloat(descuento)+'" type="number" style="width: 105px; text-align: right;" id="descuento-' + producto.id_prod + '" value="' + parseFloat(descuento).toFixed(2) + '" pattern="^[0-9]*\\.?[0-9]{0,2}$" /></td>'+
+                        // '<td class="dt-right"><input class="costoDespuesRechazo" valorReal="'+ (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_aceptada)) +'" type="number" style="width: 115px; text-align: right;" id="costoDespuesRechazo-' + producto.id_prod + '" value="' + (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_aceptada)).toFixed(2) + '" pattern="^[0-9]*\\.?[0-9]{0,2}$" /></td>'+
                     });
                     //Llenamos los campos de la factura
                     $('#uuidFacturaAlmacen').text(factura.uuid);
@@ -525,8 +531,8 @@ table.tablaPequena tbody td {
                     //Dentro del div divTotalesFactura vamos a pintar los totales de la factura
                     $('#divTotalesFactura').html('<div class="row align-content-end"><div class="col-md-3 col-sm-12 col-lg-8">'+
                         '<button class="btn btn-success" id="btnProcessConfirmClose" type="button" disabled style="display: none;"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...</button>'+
-                        '<button class="btn btn-primary btn-sm ml-2 mt-2 mb-lg-4" id="btnGuardarValidacionFactura"><i style=" color: #f6fcfb;" data-feather="save"></i> Guardar Validación</button>'+
-                        '<button class="btn btn-secondary btn-sm ml-2 mt-2 mb-lg-4" id="btnCancelarValidacionFactura"><i style=" color: #f6fcfb;" data-feather="x"></i> Cancelar</button></div>'+
+                        '<button class="btn btn-primary btn-sm ml-2 mt-2 mb-lg-4" id="btnGuardarValidacionFactura"><i style=" color: #f6fcfb;" data-feather="save"></i> Guardar Validación de factura</button>'+
+                        '<button class="btn btn-danger btn-sm ml-2 mt-2 mb-lg-4" id="btnCancelarValidacionFactura"><i style=" color: #f6fcfb;" data-feather="x"></i> Cancelar</button></div>'+
                         '<div class="col-md-3 col-sm-12 col-lg-3">'+
                             '<table class="table table-striped table-bordered tablaPequena">'+
                                 
@@ -820,7 +826,7 @@ table.tablaPequena tbody td {
             var productos = [];
             $('#tablaProductosFacturaAlmacen tbody tr').each(function() {
                 var id_prod = $(this).attr('idProducto');
-                var descuentoVal = $('#descuento-'+id_prod).val();
+                var descuentoVal = $('#descuento-'+id_prod).attr('valorReal');
                 //descuento: parseFloat($('#descuento-'+id_prod).val()).toFixed(4),
                 productos.push({
                     id_prod: $(this).attr('idProducto'),
@@ -837,7 +843,6 @@ table.tablaPequena tbody td {
                 });
 
             }); //Fin del each que recorre los productos de la factura
-            
             // return; 
             //Hacemos el request al servicio para guardar la validacion de la factura
             $.ajax({
@@ -1122,7 +1127,7 @@ table.tablaPequena tbody td {
         //Actualizamos el atributo valorReal del input de costo despues de rechazo con todos sus decimales
         $('#costoDespuesRechazo-'+id).attr('valorReal', costoDespuesRechazo);
         //Actualizamos el input de costo despues de rechazo
-        $('#costoDespuesRechazo-'+id).val(costoDespuesRechazo.toFixed(2));
+        $('#costoDespuesRechazo-'+id).text(costoDespuesRechazo.toFixed(2));
         //Al alterar el costo despues de rechazo, actualizamos el descuento llamando a sus respectivas funciones
         calculaDescuento(id);
     }
@@ -1137,7 +1142,7 @@ table.tablaPequena tbody td {
         //Actualizamos el atributo valorReal del input de descuento con todos sus decimales
         $('#descuento-'+id).attr('valorReal', descuento);
         //Actualizamos el input de descuento
-        $('#descuento-'+id).val(descuento.toFixed(2));
+        $('#descuento-'+id).text(descuento.toFixed(2));
     }
 
     //Calcula unidades aceptadas
@@ -1321,7 +1326,7 @@ table.tablaPequena tbody td {
                 }                        
             },
             success: function(response) {
-                // // console.log(response);
+                // console.log(response);
                 // Parseamos la cadena JSON para convertirla en un array de objetos
                 var data = JSON.parse(response);
                 //Si tiene datos la respuesta, entonces pintamos una tabla nueva con los datos en div divTablaEntradas

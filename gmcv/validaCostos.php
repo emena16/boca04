@@ -573,7 +573,7 @@ function pintaHojaTrabajoCosteo(idFactura, descuentoAjuste) {
         },
         success: function(response) {
             
-            // console.log(response);
+            console.log(response);
             // Parseamos la cadena JSON para convertirla en un array de objetos
             // var response = JSON.parse(response);
             var data = response.productos;
@@ -726,7 +726,7 @@ function pintaHojaTrabajoCosteo(idFactura, descuentoAjuste) {
                     '<button class="btn btn-success" id="btnProcessConfirmClose" type="button" disabled style="display: none;"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...</button>' +
                     '<button class="btn btn-primary ml-2 mt-2 mb-lg-4" id="btnGuardarValidacionFactura"><i style=" color: #f6fcfb;" data-feather="save"></i> Guardar Ajuste contra <b>' +
                     response.nombreDescuentoAjuste + '</b></button>' +
-                    '<button class="btn btn-secondary ml-2 mt-2 mb-lg-4" id="btnCancelarValidacionFactura"><i style=" color: #f6fcfb;" data-feather="x"></i> Cancelar</button></div>' +
+                    '<button class="btn btn-danger ml-2 mt-2 mb-lg-4" id="btnCancelarValidacionFactura"><i style=" color: #f6fcfb;" data-feather="x"></i> Cancelar</button></div>' +
                     '<div class="col-md-6 col-sm-12 col-lg-6">' +
                     '<table class="table table-striped table-bordered tablaPequena">' +
                     '<tbody>' +
@@ -854,8 +854,8 @@ function pintaHojaTrabajoCosteo(idFactura, descuentoAjuste) {
                 $('#totalFactura').attr('valorReal', subtotalNeto + totalIVA + totalIEPS);
 
                 //Agregamos en el div de titulo de la tabla un boton para regresar a la tabla de facturas
-                $('#tituloTabla').html('<div class="d-flex justify-content-between align-items-center mb-4"><h5>Costeo de Productos de la Factura ' + idFactura + ' contra <b>' + response.nombreDescuentoAjuste +
-                    '</b> </h5><button class="btn btn-sm btn-primary" id="btnRegresarFacturas"><i class="feather-16" data-feather="arrow-left"></i> Regresar</button></div>'
+                $('#tituloTabla').html('<div class="d-flex justify-content-between align-items-center mb-4"><h5>Productos de la factura <u>' + factura.uuid + '</u> contra <b>' + response.nombreDescuentoAjuste +
+                    '</b> </h5><button class="btn btn-sm btn-secondary" id="btnRegresarFacturas"><i class="feather-16" data-feather="arrow-left"></i> Regresar</button></div>'
                     );
 
                 //Agregamos informacion de la factura en el div infoFacturaActual 
@@ -897,7 +897,7 @@ $(document).on('click', '#btnGuardarValidacionFactura', function() {
     //         return;
     //     }
     // }); //Fin Swal.fire
-    confirmarGuardado = confirm('¿Confirma validar los ajustes de la factura?');
+    confirmarGuardado = confirm('¿Confirma validos los ajustes de la factura?');
     if (!confirmarGuardado) {
         return;
     }
@@ -1268,13 +1268,13 @@ function pintaFacturas(fechaInicio, fechaFin, idProveedor, idOrdenCompra) {
                 //Actualizamos los iconos de feather
                 // console.log(data);
                 //Actualizamos el titulo de la tabla
-                $('#tituloTabla').html('Ordenes de Compra para <b>' + data[0].razonSocial + '</b> ' + $('#descAjuste option:selected').text());
+                $('#tituloTabla').html('Facturas  para <b>' + data[0].razonSocial + '</b> ' + $('#descAjuste option:selected').text());
                 feather.replace();
 
 
             } else {
                 //Actualizamos el titulo de la tabla
-                $('#tituloTabla').html('Ordenes de Compra para <b>' + $('#idProveedor option:selected').text() + '</b> ' + $('#descAjuste option:selected').text());
+                $('#tituloTabla').html('Facturas  para <b>' + $('#idProveedor option:selected').text() + '</b> ' + $('#descAjuste option:selected').text());
                 $('#divTablaEntradas').html('<div class="alert alert-warning">No hay facturas validadas para este proveedor en este rango de fechas</div>');
                 //Avisamos que no hay facturas para mostrar para este proveedor
                 alert('No hay facturas para mostrar para este proveedor: ' + $('#idProveedor option:selected').text());
@@ -1287,7 +1287,7 @@ function pintaFacturas(fechaInicio, fechaFin, idProveedor, idOrdenCompra) {
 } // Fin de la funcion pintaFacturas
 
 
-//Creamos una funcion para pintar las ordenes de compra
+//Creamos una funcion para pintar las Facturas 
 function pintaOrdenes(id_prov, id_bodega) {
     $.ajax({
         url: 'services/mainService.php',
@@ -1361,13 +1361,13 @@ function pintaOrdenes(id_prov, id_bodega) {
                 });
                 console.log(data);
                 //Actualizamos el titulo de la tabla
-                $('#tituloTabla').html('Ordenes de Compra para <u>' + data[0].razonSocial + '</u>');
+                $('#tituloTabla').html('Facturas  para <u>' + data[0].razonSocial + '</u>');
                 //Actualizamos los iconos de feather
                 feather.replace();
 
 
             } else {
-                $('#divTablaEntradas').html('<div class="alert alert-warning">No hay ordenes de compra pendientes para este proveedor en esta bodega</div>');
+                $('#divTablaEntradas').html('<div class="alert alert-warning">No hay Facturas  pendientes para este proveedor en esta bodega</div>');
             }
         },
         error: function(error) {

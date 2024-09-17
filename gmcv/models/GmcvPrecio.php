@@ -156,7 +156,7 @@ class GmcvPrecio extends db{
             FROM gmcv_descuento_bodega db
             JOIN gmcv_descuento d ON db.id_descuento = d.id
             JOIN  gmcv_descuento_producto dp on dp.id_descuento = d.id
-            WHERE db.id_bodega IN ($bodegas) AND d.id_prov = $proveedor AND dp.ini <= DATE('$fecha')
+            WHERE db.id_bodega IN ($bodegas) AND d.id_prov = $proveedor AND dp.ini <= DATE('$fecha') and d.id_status = 4
             GROUP BY db.id_bodega";
             $result = db::query($query);
             $resultados = db::fetch_all($result);

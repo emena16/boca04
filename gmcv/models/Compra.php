@@ -404,7 +404,7 @@ class Compra extends db {
     public function getComprasPendientesPorValidar($id_prov, $id_bodega) {
         
         $query = "SELECT c.id, c.alta, c.llegada, c.id_status, c.id_usr, c.id_bodega, c.id_tipo_venta, c.id_usr_alm, c.tipo, c.nota_orden, c.nota_entrada,
-        COALESCE((SELECT GROUP_CONCAT(f.id) FROM gmcv_compra_factura f WHERE f.id_compra = c.id), 'Pendiente por ingresar') as facturas,
+        COALESCE((SELECT GROUP_CONCAT(' ',f.uuid) FROM gmcv_compra_factura f WHERE f.id_compra = c.id), 'Pendiente por ingresar') as facturas,
         p.corto as nombre_proveedor, p.largo as razonsocial,
         b.nombre as nombre_bodega
         FROM compra c
@@ -424,7 +424,7 @@ class Compra extends db {
             $row['alta'] = date('Y-m-d', strtotime($row['alta']));
 
             //Agregamos un boton para ver/agregar facturas
-            $row['btn'] = '<button type="button" id="'.$row['id'].'" class="btn btn-success btnValidar" ><i style=" color: #f6fcfb;" data-feather="check-square"></i>  Validar</button>';
+            $row['btn'] = '<button type="button" id="'.$row['id'].'" class="btn btn-success btnValidar" ><i style=" color: #f6fcfb;" data-feather="check-square"></i>  Validar Orden</button>';
 
             //Agregamos toda la información a un arreglo para mandarla como respuesta
             $data[] = $row;
@@ -497,7 +497,7 @@ class Compra extends db {
             FROM gmcv_descuento_bodega db
             JOIN gmcv_descuento d ON db.id_descuento = d.id
             JOIN  gmcv_descuento_producto dp on dp.id_descuento = d.id
-            WHERE db.id_bodega IN ($bodegas) AND d.id_prov = $proveedor AND dp.ini <= DATE('$fecha')
+            WHERE db.id_bodega IN ($bodegas) AND d.id_prov = $proveedor AND dp.ini <= DATE('$fecha') and d.id_status = 4
             GROUP BY db.id_bodega";
             //Escribimos el query en un archivo para debugear
             file_put_contents('query_descuentos_consistentes.sql', $query);

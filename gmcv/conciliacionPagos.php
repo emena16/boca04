@@ -153,7 +153,7 @@ table.tablaPequena tbody td {
                 </select>
             </div>
             <div class="col-md-2">
-                <button id="btnBuscarFacturas" class="mt-lg-4 btn btn-info btn-lg"><i style=" color: #f6fcfb;" data-feather="search"></i> Buscar Facturas </button>
+                <button id="btnBuscarFacturas" class="mt-lg-4 btn btn-primary btn-lg"><i style=" color: #f6fcfb;" data-feather="search"></i> Buscar Facturas </button>
             </div>
         </div>
 

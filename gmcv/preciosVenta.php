@@ -1180,9 +1180,9 @@ $(document).ready(function() {
         // Obtenemos el margen actual del producto para compararlo con el nuevo margen y obtener la diferencia porcentual
         if (unidadesOperativasSeleccionadas.length === 1) {
             var margenActual = parseFloat($('#margenActual-' + id).text());
-            $('#diffPorcentaje-' + id).text(parseFloat(valor - margenActual).toFixed(2));
+            $('#diffPorcentaje-' + id).text(parseFloat(margenActual - valor).toFixed(2));
             // Actualizamos el atributo valorReal de diferencial de porcentaje
-            $('#diffPorcentaje-' + id).attr('valorReal', parseFloat(valor - margenActual));
+            $('#diffPorcentaje-' + id).attr('valorReal', parseFloat(margenActual - valor));
         }
 
         //Calculamos el precio con el margen nuevo
@@ -1553,7 +1553,7 @@ function  pintaHojaTrabajoPVta(idProveedor, bodegas, uOperativas, fecha) {
                         //Diferencia porcentual
                         var diffPorcentaje = parseFloat(producto.margenActual) - parseFloat(producto.margenNuevo);
                         // console.log("Diferencia porcentual: "+diffPorcentaje);
-                        tabla += '<td class="dt-right" id="diffPorcentaje-' + producto.id_pm +'" valorReal="' + diffPorcentaje + '">' + parseFloat(diffPorcentaje).toFixed(2) + '</td>';
+                        tabla += '<td class="dt-right" id="diffPorcentaje-' + producto.id_pm +'" valorReal="' +  diffPorcentaje + '">' + parseFloat(diffPorcentaje).toFixed(2) + '</td>';
                         //Fecha si en null escribimos --/--/----
                         var fecha = producto.fecha ? producto.fecha : '--/--/--  ';
                         tabla += '<td class="dt-right">' + fecha + '</td>';
@@ -1564,7 +1564,7 @@ function  pintaHojaTrabajoPVta(idProveedor, bodegas, uOperativas, fecha) {
                 tabla += '</tbody>';
                 tabla += '</table> <div class="mt-4 row align-items-center" id="divTotalesFactura">';
                 //Agregamos un div para un boton de guardar cambios
-                tabla += '<div class="text-center"><button class="btn btn-primary btn-lg" disabled id="btnGuardarCambios"><i class="feather-16" data-feather="save"></i> Guardar cambios</button></div>';
+                tabla += '<div class="text-center"><button class="btn btn-success btn-lg ml-3" disabled id="btnGuardarCambios"><i class="feather-16" data-feather="save"></i> Guardar cambios</button></div>';
 
                 $('#divTablaProductos').html(tabla);
                 //Alamcenamos los datos del respose en un objeto de sesión sessionStorage
