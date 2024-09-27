@@ -79,6 +79,18 @@ table.tablaPequena tbody td {
 </div>
 
 
+<div style="padding-left: 80px; padding-right: 10px;" >
+    <div class="container-fluid">
+        <div class="page-title" style="float: none;">
+            <h3>Tittle</h3>
+        </div>
+        <!-- Aqui vamos a pintar todo lo que se requiera en la vista -->
+        <div class="statbox widget box box-shadow widget-content-area p-3  mt-3">
+            
+        </div>
+    </div>
+</div>
+
 <div class="card card-principal">
     <div class="card-body">
 

@@ -61,18 +61,18 @@ class CompraFacturaController {
             ));
         }
         //Si el campo fecha_factura está vacío, no hacemos nada
-        if (empty($args['factura']['fecha_factura'])) {
+        if (empty($args['factura']['fecha_factura']) || strtotime($args['factura']['fecha_factura']) > strtotime(date('Y-m-d'))) {
             return json_encode(array(
                 'status' => false, 
-                'message' => 'Por favor ingrese la fecha de la factura'
+                'message' => 'Por favor revise la fecha de la factura'
             ));
         }
 
         //Si el campo fecha_llegada está vacío, no hacemos nada
-        if (empty($args['factura']['fecha_llegada'])) {
+        if (empty($args['factura']['fecha_llegada']) || strtotime($args['factura']['fecha_llegada']) > strtotime(date('Y-m-d'))) {
             return json_encode(array(
                 'status' => false, 
-                'message' => 'Por favor ingrese la fecha de llegada de la factura'
+                'message' => 'Por favor revise la fecha de llegada de la factura'
             ));
         }
 
@@ -86,7 +86,8 @@ class CompraFacturaController {
 
         //No puede haber caducidades vacías y tampoco puede haber mas unidades rechazadas que unidades facturadas
         foreach ($args['productos'] as $producto) {
-            if (empty($producto['caducidad'])) {
+
+            if (empty($producto['caducidad']) || strtotime($producto['caducidad']) < strtotime(date('Y-m-d'))) {
                 return json_encode(array(
                     'status' => false, 
                     'message' => 'Por favor verifique las caducidades de los productos'
@@ -98,6 +99,8 @@ class CompraFacturaController {
                     'message' => 'La cantidad rechazada de un producto no puede ser mayor a la cantidad facturada, por favor verifique los datos'
                 ));
             }
+
+
         }
         //Verificamos que el uuid de la factura no exista
         $compraFactura = new CompraFactura();
@@ -256,6 +259,7 @@ class CompraFacturaController {
         $compraFactura->id = $factura['id'];
         $compraFactura->fecha = $factura['fecha_factura'];
         $compraFactura->fecha_llegada = $factura['fecha_llegada'];
+        $compraFactura->uuid = $factura['uuid'];
         // Actualizamos la factura
         if (!$compraFactura->updateFacturaEntrada()) {
             return json_encode(array(

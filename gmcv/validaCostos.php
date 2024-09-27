@@ -105,83 +105,76 @@ td.text-20 {
 }
 </style>
 
-
-<div class="page-header layout-top-spacing title-header">
-    <div class="pge-title" style="margin-left: 3.5%;">
-        <h3>&nbsp; Validación de costos</h3>
-    </div>
-</div>
-
-
-<div class="card card-principal">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-sm-12 mb-4">
-                <h5>Listado de Diferencias de Costos Pactados</h5>
-            </div>
+<div style="padding-left: 80px; padding-right: 10px;" >
+    <div class="container-fluid">
+        <div class="page-title" style="float: none;">
+            <h3>Verificación de Costos de Compras</h3>
         </div>
+        <!-- Aqui vamos a pintar todo lo que se requiera en la vista -->
+        <div class="statbox widget box box-shadow widget-content-area p-3  mt-3">
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="fechaInicio">Fecha Inicial: </label>
+                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio"
+                        value="<?= date('Y-m-d', strtotime('-1 month')) ?>">
+                </div>
 
-        <div class="row">
-            <div class="col-md-3">
-                <label for="fechaInicio">Fecha Inicial: </label>
-                <input type="date" class="form-control" id="fechaInicio" name="fechaInicio"
-                    value="<?= date('Y-m-d', strtotime('-1 month')) ?>">
-            </div>
+                <div class="col-md-3">
+                    <label for="fechaFin">Fecha Final: </label>
+                    <input type="date" class="form-control" id="fechaFin" name="fechaFin"
+                        value="<?=date('Y-m-d')?>">
+                </div>
 
-            <div class="col-md-3">
-                <label for="fechaFin">Fecha Final: </label>
-                <input type="date" class="form-control" id="fechaFin" name="fechaFin"
-                    value="<?=date('Y-m-d')?>">
-            </div>
+                <div class="col-md-4">
+                    <label for="idProveedor">Proveedor: </label>
+                    <select class="form-control" id="idProveedor" name="idProveedor">
+                        <option value="" selected disabled>Seleccione un proveedor</option>
+                        <?php
+                            $proveedores = Compra::getProveedoresConOrdenesPorValidarCostos();
+                            foreach ($proveedores as $proveedor) {
+                                echo "<option value='".$proveedor['id']."'>".$proveedor['nombre']."</option>";
+                            }
+                        ?>
+                    </select>
+                </div>
 
-            <div class="col-md-4">
-                <label for="idProveedor">Proveedor: </label>
-                <select class="form-control" id="idProveedor" name="idProveedor">
-                    <option value="" selected disabled>Seleccione un proveedor</option>
-                    <?php
-                        $proveedores = Compra::getProveedoresConOrdenesPorValidarCostos();
-                        foreach ($proveedores as $proveedor) {
-                            echo "<option value='".$proveedor['id']."'>".$proveedor['nombre']."</option>";
-                        }
-                    ?>
-                </select>
-            </div>
+                <div class="col-md-2">
+                    <label for="descAjuste">Descuento Ajuste: </label>
+                    <select class="form-control" id="descAjuste" name="descAjuste">
+                        <option value="" selected disabled>Seleccione</option>
+                        <option value="1">Contra Costo Pactado</option>
+                        <option value="2">Contra Costo Ingreso</option>
+                        <option value="3">Contra Precio de Lista</option>
+                    </select>
+                </div>
 
-            <div class="col-md-2">
-                <label for="descAjuste">Descuento Ajuste: </label>
-                <select class="form-control" id="descAjuste" name="descAjuste">
-                    <option value="" selected disabled>Seleccione</option>
-                    <option value="1">Contra Costo Pactado</option>
-                    <option value="2">Contra Costo Ingreso</option>
-                    <option value="3">Contra Precio de Lista</option>
-                </select>
-            </div>
+                <div class="col-md-2">
+                    <button class="btn btn-lg btn-primary" id="btnBuscar" style="margin-top: 32px;">
+                        <i class="feather-16" data-feather="search"></i>
+                        Buscar
+                    </button>
+                </div>
+            </div><!-- Fin row de los criterios de busqueda -->
 
-            <div class="col-md-2">
-                <button class="btn btn-lg btn-primary" id="btnBuscar" style="margin-top: 32px;">
-                    <i class="feather-16" data-feather="search"></i>
-                    Buscar
-                </button>
-            </div>
-        </div><!-- Fin row de los criterios de busqueda -->
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="page-header layout-top-spacing title-header mt-lg-4">
-                    <div class="pge-title"> <br><br><br>
-                        <h5 id="tituloTabla"></h5>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header layout-top-spacing title-header mt-lg-4">
+                        <div class="pge-title"> <br><br><br>
+                            <h5 id="tituloTabla"></h5>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div id="divTablaEntradas" class="col-md-12 col-lg-12">
-                <!-- Aqui vamos a pintar el datatable con las facturas ordenas por compra -->
+            <div class="row">
+                <div id="divTablaEntradas" class="col-md-12 col-lg-12">
+                    <!-- Aqui vamos a pintar el datatable con las facturas ordenas por compra -->
+                </div>
             </div>
-        </div>
 
-    </div> <!-- fin card-body -->
-</div> <!-- fin card-principal -->
+        </div> <!-- fin statbox -->
+    </div> <!-- fin container-fluid -->
+</div> <!-- fin div padding-left -->
 
 <!-- Agregamos la libreria de sweetalert2 -->
 <link rel="stylesheet" type="text/css" href="../../../sys/bocampana_vista/plugins/sweetalerts/sweetalert2.all.min.css">
@@ -189,6 +182,20 @@ td.text-20 {
 
 <script>
 $(document).ready(function() {
+
+    //Creamos un evento que limpie la tabla de facturas cuando se cambie el proveedor
+    $(document).on('change', '#idProveedor', function() {
+        $('#divTablaEntradas').html('');
+        //Limpiamos el titulo de la tabla tituloTabla
+        $('#tituloTabla').text('');
+    });
+
+    //Creamos un evento que limpie la tabla de facturas cuando se cambie el descuento ajuste
+    $(document).on('change', '#descAjuste', function() {
+        $('#divTablaEntradas').html('');
+        //Limpiamos el titulo de la tabla tituloTabla
+        $('#tituloTabla').text('');
+    });
 
     //Creamos un evento para el boton de buscar
     $(document).on('click', '#btnBuscar', function() {
@@ -651,6 +658,7 @@ function pintaHojaTrabajoCosteo(idFactura, descuentoAjuste) {
 
                     tabla += '<tr>';
                     tabla += '<td>' + producto.comercial + '</td>';
+                    // <span class="shadow-none badge badge-info infoCosto mr-2" nombreProducto="'+producto.comercial+'" id="'+ producto.id_prod +'" ><i style=" color: #f6fcfb;  width: 12px; height: 12px;" data-feather="info"></i></span>
                     tabla += '<td class="dt-right" id="precioLista-' + producto.id_prod +'" valorReal="' + producto.precioListaCatalogo + '">' + parseFloat(producto.precioListaCatalogo).toFixed(2) + '</td>';
                     //Array de descuentos antes de CP, recorremos las columnas y buscamos el descuento que corresponde a la columna
                     $.each(columnasAntesCP, function(index, columna) {
@@ -674,8 +682,8 @@ function pintaHojaTrabajoCosteo(idFactura, descuentoAjuste) {
                     tabla += '<td class="dt-right" id="unidadesAceptadas-' + producto.id_prod +'" valorReal="' + producto.cantidad_aceptada + '">' + parseFloat(producto.cantidad_aceptada).toFixed(2) + '</td>';
                     tabla += '<td class="dt-right" id="unidadesRechazadas-' + producto.id_prod +'" valorReal="' + producto.cantidad_rechazada + '">' + parseFloat(producto.cantidad_rechazada).toFixed(2) + '</td>';
                     tabla += '<td class="dt-right" id="subTotalFact-' + producto.id_prod +'" valorReal="' + producto.subTotalFact + '">' + producto.subTotalFact.toFixed(2) + '</td>';
-                    tabla += '<td class=""><input type="number" ajuste="'+response.siglaDescuentoAjuste+'" class="inputDescuentoAjuste" diffMoneda="' + producto.diffMoneda + '" id="descuentoAjuste-' + producto.id_prod + '" value="' +parseFloat(producto.ajusteDescuento).toFixed(2) +'" style="width: 105px; text-align: right;"></td>';
-                    tabla += '<td class=""><input type="number" class="inputDescuentoRechazo" diffMoneda="' + producto.diffMoneda + '" id="descuentoRechazo-' + producto.id_prod + '" value="' +parseFloat(producto.descuentoRechazo).toFixed(2) +'" style="width: 105px; text-align: right;"></td>';
+                    tabla += '<td class="text-right"><input type="number" ajuste="'+response.siglaDescuentoAjuste+'" class="inputDescuentoAjuste" diffMoneda="' + producto.diffMoneda + '" id="descuentoAjuste-' + producto.id_prod + '" value="' + parseFloat(producto.ajusteDescuento).toFixed(2) + '" style="width: 105px; text-align: right;"></td>';
+                    tabla += '<td class="text-right"><input type="number" class="inputDescuentoRechazo" diffMoneda="' + producto.diffMoneda + '" id="descuentoRechazo-' + producto.id_prod + '" value="' + parseFloat(producto.descuentoRechazo).toFixed(2) + '" style="width: 105px; text-align: right;"></td>';
                     tabla += '<td class="dt-right" id="subTotalIngreso-' + producto.id_prod +'" valorReal="' + parseFloat(producto.subTotalIngreso) + '">' + toMoney(parseFloat(producto.subTotalIngreso).toFixed(2)) + '</td>';
 
                     tabla += '</tr>';
@@ -730,7 +738,7 @@ function pintaHojaTrabajoCosteo(idFactura, descuentoAjuste) {
                     '<div class="col-md-6 col-sm-12 col-lg-6">' +
                     '<table class="table table-striped table-bordered tablaPequena">' +
                     '<tbody>' +
-                    '<tr><th colspan="2">Totales Factura&nbsp;&nbsp;</th> <th colspan="2">Totales Factura Despues de Rechazos</th> <th colspan="2">&nbsp;&nbsp;Totales Ingreso</th></tr>' +
+                    '<tr><th colspan="2">Totales Factura&nbsp;&nbsp;</th> <th colspan="2">Totales Factura Después de Rechazos</th> <th colspan="2">&nbsp;&nbsp;Totales Ingreso</th></tr>' +
                     
                     '<tr>' +
                     '<td class="dt-right">Subtotal Bruto</td>' +
@@ -750,7 +758,7 @@ function pintaHojaTrabajoCosteo(idFactura, descuentoAjuste) {
                     '<td class="dt-right">Descuento Total</td>' +
                     '<td class=""><label valorReal="" class="dt-right" style="width: 150px; display: block;" id="descuentoTotalFactura"></label></td>' +
                     
-                    '<td class="dt-right">Total<br>Ajustes<br><br>Descuentos<br>Globales<br><button class="btn btn-xs btn-success" type="button" id="agregarDescuentoGlobal">Agregar</button></td>' + 
+                    '<td class="dt-right">Descuentos por<br>Ajustes<br><br>Descuentos<br>Globales<br><button class="btn btn-xs btn-success" type="button" id="agregarDescuentoGlobal">Agregar</button></td>' + 
                     '<td>' +
                         '<table class="table table-striped table-bordered tablaPequena">' +
                             '<tr><td class="dt-right">'+tituloAjuste+'</td><td valorReal="'+factura.ajuste+'" id="totalAjusteDescuento">' + toMoney(factura.ajuste) + '</td></tr>' +
@@ -801,7 +809,7 @@ function pintaHojaTrabajoCosteo(idFactura, descuentoAjuste) {
                     '<td class="dt-right">Total</td>' +
                     '<td class=""><label class="dt-right" valorReal="" style="width: 150px; display: block;" id="totalFactura"></label></td>' +
 
-                    '<td class="dt-right">Total a Pagar:</td>' +
+                    '<td class="dt-right">Total después<br>de ajustes:</td>' +
                     '<td class=""><label class="dt-right" valorReal="" style="width: 150px; display: block;" id="totalIngreso"></label></td>' +
                     '</tr>' +
 
@@ -998,11 +1006,11 @@ $(document).on('click', '#btnGuardarValidacionFactura', function() {
         productoEnviar.descuento_porcentaje = parseFloat(producto.diffPorcentaje);
         paqProducto.push(productoEnviar);
     });
-    console.log("Datos a enviar:");
-    console.log(
-        paqFactura,
-        paqProducto
-    );
+    // console.log("Datos a enviar:");
+    // console.log(
+    //     paqFactura,
+    //     paqProducto
+    // );
     // return;  
 
     //Estamos listos para enviar los datos
@@ -1046,6 +1054,50 @@ $(document).on('click', '#btnGuardarValidacionFactura', function() {
         }
     });
 
+});
+
+//Creamos un evento que al pulsar un boton de la clase infoCosto muestre un modal con la información del costo del producto
+$(document).on('click', '.infoCosto', function() {
+    // console.log('click en el boton con el idProducto: '+$(this).attr('id'));
+    var fechaFactura = $('#fechaFact').val();
+
+    console.log('Request para obtener el costo del producto con id: '+$(this).attr('id')+' y fecha de factura: '+fechaFactura + ' y id de compra: '+$('#idCompra').val());
+
+    //Llamamos al servicio para obtener la información del costo del producto a traves del id del producto y gmcv_producto_compra
+    $.ajax({
+        url: 'services/mainService.php',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            action: 'getCostosProducto',
+            controller: "GmcvPrecio",
+            args: { 
+                'id_prod': $(this).attr('id'),
+                'fechaFactura': fechaFactura,
+                'id_compra': $('#idCompra').val()
+            }
+        },
+        success: function(response) {
+            // console.log(response);
+
+            // //Actualizamos los inputs del modal con la información del costo del producto
+            // $('#precioListaProducto').text(response.precioListaCatalogo);
+            // $('#costoPactadoProducto').text(response.costoPactadoDB);
+            // $('#costoIngresoProducto').text(response.costoIngresoDB);
+            //Hacemos un pequeño retraso para que se actualicen los inputs antes de mostrar el modal
+            // $('#modalInfoCostoProducto').mod l('show');
+            alert(
+                'Precio lista: $'+ parseFloat(response.precioListaCatalogo).toFixed(2)+
+                '\nCosto Pactado: $'+ parseFloat(response.costoPactadoDB).toFixed(2)+
+                '\nCosto Ingreso: $'+ parseFloat(response.costoIngresoDB).toFixed(2));
+        },
+
+        error: function(error) {
+            // console.log(error);
+            //Mostramos un mensaje de error
+            alert('Ocurrió un error al obtener la información del costo del producto');
+        }
+    });
 });
 
 //Creamos un evento para cuando pulsan el boton de descargar excel de la factura a traves de la clase btnDownloadExcel
@@ -1181,7 +1233,7 @@ function pintaFacturas(fechaInicio, fechaFin, idProveedor, idOrdenCompra) {
             //Si tiene datos la respuesta, entonces pintamos una tabla nueva con los datos en div divTablaEntradas
             if (data.length > 0) {
                 var tabla =
-                    '<table id="tablaEntradas" class="table table-striped table-bordered table-hover" style="width:100%">';
+                    '<table id="tablaEntradas" class="table table-striped table-bordered    " style="width:100%">';
                 // //Agregamos una fila de cabecera a la tabla
                 // tabla += '<tr>';
                 // //Agregamos una celda que ocupe 5 columnas
@@ -1199,11 +1251,11 @@ function pintaFacturas(fechaInicio, fechaFin, idProveedor, idOrdenCompra) {
                 tabla += '<th><small>Fecha<br>Factura</small></th>';
                 tabla += '<th><small>Fecha<br>Ingreso</small></th>';
                 tabla += '<th><small>Costo de<br>Factura</small></th>';
-                tabla += '<th><small>Anterior<br>Neto</small></th>';
+                // tabla += '<th><small>Anterior<br>Neto</small></th>';
                 tabla += '<th><small>Bruto</small></th>';
                 tabla += '<th><small>Impuestos</small></th>';
                 tabla += '<th><small>Neto</small></th>';
-                tabla += '<th><small>Costo<br>Autorizado</small></th>';
+                tabla += '<th><small>Costo<br>Ajustado</small></th>';
                 tabla += '<th><small>Acciones</small></th>';
                 tabla += '</tr>';
                 tabla += '</thead>';
@@ -1217,14 +1269,14 @@ function pintaFacturas(fechaInicio, fechaFin, idProveedor, idOrdenCompra) {
                     tabla += '<td>' + factura.fecha_llegada + '</td>';
                     tabla += '<td class="dt-right">' + toMoney((parseFloat(factura.total)).toFixed(2)) +
                     '</td>';
-                    tabla += '<td class="dt-right">' + toMoney((parseFloat(factura.total)).toFixed(2)) + '</td>';
+                    // tabla += '<td class="dt-right">' + toMoney((parseFloat(factura.total)).toFixed(2)) + '</td>';
                     tabla += '<td class="dt-right">' + toMoney((parseFloat(factura.subTotalBruto)).toFixed(2)) + '</td>';
                     tabla += '<td class="dt-right">' + toMoney((parseFloat(factura.iepsTraslado)+parseFloat(factura.ivaTraslado)).toFixed(2)) + '</td>';
                     //Neto
                     var neto = (parseFloat(factura.subTotalBruto) + parseFloat(factura.ivaTraslado) + parseFloat(factura.iepsTraslado)) - (parseFloat(factura.descRechazo) - parseFloat(factura.descGlobal));
                     // console.log("Neto se calculo asi: "+factura.subTotalBruto+" + "+factura.ivaTraslado+" + "+factura.iepsTraslado+" - "+factura.descRechazo+" - "+factura.descGlobal+" = "+neto);
                     tabla += '<td class="dt-right">' + toMoney(neto) + '</td>';
-                    tabla += '<td class="dt-right">' + toMoney((parseFloat(factura.totalAPagar2)).toFixed(2)) + '</td>';
+                    tabla += '<td class="dt-right" ' + (factura.status_factura == 1 ? '' : 'style="text-align: center !important;"') + ' >' + (factura.status_factura == 1 ? toMoney((parseFloat(factura.totalAPagar2)).toFixed(2)) : '  ---  ') + '</td>';
                     let buttonHtml = `
                         <button id="${factura.idFactura}" class="btn btn-xs ml-2 btn-primary btnCosteaFactura" ${factura.status_factura == 1 ? 'disabled' : ''}>
                             <i class="feather-16" data-feather="dollar-sign"></i> ${factura.status_factura == 1 ? 'Validada' : 'Validar'}
@@ -1242,11 +1294,11 @@ function pintaFacturas(fechaInicio, fechaFin, idProveedor, idOrdenCompra) {
                 tabla += '<th><small>Fecha<br>Factura</small></th>';
                 tabla += '<th><small>Fecha<br>Ingreso</small></th>';
                 tabla += '<th><small>Costo de<br>Factura</small></th>';
-                tabla += '<th><small>Anterior<br>Neto</small></th>';
+                // tabla += '<th><small>Anterior<br>Neto</small></th>';
                 tabla += '<th><small>Bruto</small></th>';
                 tabla += '<th><small>Impuestos</small></th>';
                 tabla += '<th><small>Neto</small></th>';
-                tabla += '<th><small>Costo<br>Autorizado</small></th>';
+                tabla += '<th><small>Costo<br>Ajustado</small></th>';
                 tabla += '<th><small>Acciones</small></th>';
                 tabla += '</tr>';
                 tabla += '</tfoot>';
@@ -1270,14 +1322,12 @@ function pintaFacturas(fechaInicio, fechaFin, idProveedor, idOrdenCompra) {
                 //Actualizamos el titulo de la tabla
                 $('#tituloTabla').html('Facturas  para <b>' + data[0].razonSocial + '</b> ' + $('#descAjuste option:selected').text());
                 feather.replace();
-
-
             } else {
                 //Actualizamos el titulo de la tabla
                 $('#tituloTabla').html('Facturas  para <b>' + $('#idProveedor option:selected').text() + '</b> ' + $('#descAjuste option:selected').text());
                 $('#divTablaEntradas').html('<div class="alert alert-warning">No hay facturas validadas para este proveedor en este rango de fechas</div>');
                 //Avisamos que no hay facturas para mostrar para este proveedor
-                alert('No hay facturas para mostrar para este proveedor: ' + $('#idProveedor option:selected').text());
+                // alert('No hay facturas para mostrar para este proveedor: ' + $('#idProveedor option:selected').text());
             }
         },
         error: function(error) {

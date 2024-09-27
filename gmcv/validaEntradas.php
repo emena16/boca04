@@ -69,61 +69,61 @@ table.tablaPequena tbody td {
 
 
 
-<div class="page-header layout-top-spacing title-header">
-    <div class="pge-title" style="margin-left: 3.5%;">
-        <h3>&nbsp; Validación de Entradas </h3>
+<div style="padding-left: 80px; padding-right: 10px;" >
+    <div class="container-fluid">
+        <div class="page-title" style="float: none;">
+            <h3>Validación de Entradas</h3>
+        </div>
+        <!-- Aqui vamos a pintar todo lo que se requiera en la vista -->
+        <div class="statbox widget box box-shadow widget-content-area p-3  mt-3">
+
+            <div class="row">
+                <div class="col-md-4 col-sm-6">
+                    <label for="lblProveedor">Proveedor:</label>
+                    <select class="form-control" id="proveedor" name="proveedor">
+                        <option selected disabled value="0">Selecciona un proveedor</option>
+                        <?php
+                        $compra = new Compra();
+                        $proveedores = $compra->getProveedoresConOrdenesPorValidar();
+                        foreach ($proveedores as $proveedor) {
+                            echo '<option value="'.$proveedor['id'].'">'.$proveedor['nombre'].'</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <label for="lblBodega">Bodega:</label>
+                    <select class="form-control" id="bodega" name="bodega">
+                        <option selected disabled value="0">Selecciona un proveedor</option>
+                    </select>
+                </div>
+            </div> <!-- fin row -->
+
+            <!-- <div class="row">
+            <div class="col-md-4">
+                    <a href="validaCostos.php"><button class="mt-lg-4 btn btn-info btn-lg"><i style=" color: #f6fcfb;" data-feather="search"></i> Consulta Avanzada </button></a>
+                </div>
+            </div> -->
+
+            <div class="row">
+                <div class="col-md-12"><div class="page-header layout-top-spacing title-header mt-lg-4">
+                    <div class="pge-title"> <br><br><br>
+                        <h5 id="tituloTabla"></h5>
+                    </div>
+                </div></div>
+            </div>
+            <div class="row">
+                
+                <div id="divTablaEntradas" class="col-md-12 col-lg-12">
+                    <!-- Aqui vamos a pintar el datatable con las ordenes de compra -->
+                </div>
+            </div>
+
+            
+        </div>
     </div>
 </div>
 
-
-<div class="card card-principal">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4 col-sm-6">
-                <label for="lblProveedor">Proveedor:</label>
-                <select class="form-control" id="proveedor" name="proveedor">
-                    <option selected disabled value="0">Selecciona un proveedor</option>
-                    <?php
-                    $compra = new Compra();
-                    $proveedores = $compra->getProveedoresConOrdenesPorValidar();
-                    foreach ($proveedores as $proveedor) {
-                        echo '<option value="'.$proveedor['id'].'">'.$proveedor['nombre'].'</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <label for="lblBodega">Bodega:</label>
-                <select class="form-control" id="bodega" name="bodega">
-                    <option selected disabled value="0">Selecciona un proveedor</option>
-                </select>
-            </div>
-        </div>
-        
-
-        <!-- <div class="row">
-            <div class="col-md-4">
-                <a href="validaCostos.php"><button class="mt-lg-4 btn btn-info btn-lg"><i style=" color: #f6fcfb;" data-feather="search"></i> Consulta Avanzada </button></a>
-            </div>
-        </div> -->
-
-        <div class="row">
-            <div class="col-md-12"><div class="page-header layout-top-spacing title-header mt-lg-4">
-                <div class="pge-title"> <br><br><br>
-                    <h5 id="tituloTabla"></h5>
-                </div>
-            </div></div>
-        </div>
-        <div class="row">
-            
-            <div id="divTablaEntradas" class="col-md-12 col-lg-12">
-                <!-- Aqui vamos a pintar el datatable con las ordenes de compra -->
-            </div>
-        </div>
-
-
-    </div> <!-- fin card-body -->
-</div> <!-- fin card-principal -->
 
 
 <!-- MODAL DE CONFIRMACION DE CERRIE DE VALIDACION DE ORDEN DE COMPRA -->
@@ -191,6 +191,10 @@ table.tablaPequena tbody td {
         $('#proveedor').change(function() {
             //Si detectamos un cambio en el select de proveedor vaciamos la tabla de ordenes de compra
             $('#divTablaEntradas').html('');
+            //Limpiamos los inputs ocultos de idCompra e idFactura
+            $('#idCompra').val('');
+            $('#idFactura').val('');
+            
 
             var id_prov = $(this).val();
             if(id_prov != 0) {
@@ -509,7 +513,7 @@ table.tablaPequena tbody td {
                             '<td class="dt-right"><input class="rechazado" type="number" style="width: 90px; text-align: right;" id="rechazado-' + producto.id_prod + '" value="' + parseFloat(producto.cantidad_rechazada).toFixed(2) + '" pattern="^[0-9]*\\.?[0-9]{0,2}$" /></td>'+
                             '<td class="dt-right"><span class="descuento" valorReal="'+parseFloat(descuento)+'" type="number" style="width: 105px; text-align: right;" id="descuento-' + producto.id_prod + '" pattern="^[0-9]*\\.?[0-9]{0,2}$">' + parseFloat(descuento).toFixed(2) + '</span></td>'+
                             '<td class="dt-right"><span class="costoDespuesRechazo" valorReal="'+ (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_aceptada)) +'" type="number" style="width: 115px; text-align: right;" id="costoDespuesRechazo-' + producto.id_prod + '">' + (parseFloat(producto.costoPactado) * parseFloat(producto.cantidad_aceptada)).toFixed(2) + '</span></td>'+
-                            '<td><input type="date" style="width: 110px;" id="caducidad-' + producto.id_prod + '" value="'+producto.caducidad+'" /></td>'+
+                            '<td><input type="date" hidden style="width: 110px;" id="caducidad-' + producto.id_prod + '" value="'+producto.caducidad+'" />'+producto.caducidad+'</td>'+
                             '</tr>'
                         );
                         // Campos eliminados:
@@ -520,8 +524,9 @@ table.tablaPequena tbody td {
                     $('#uuidFacturaAlmacen').text(factura.uuid);
                     $('#fechaFacturaAlmacen').val(factura.fecha);
                     $('#fechaLlegadaAlmacen').val(factura.fecha_llegada);
-                    factura.fecha_compromiso ? $('#fechaCompromisoAlmacen').val(factura.fecha_compromiso) : $('#fechaCompromisoAlmacen').val('');
-                    factura.dias_alerta ? $('#diasAlertaAlmacen').val(factura.dias_alerta) : $('#diasAlertaAlmacen').val('');
+                    factura.fecha_compromiso ? $('#fechaCompromisoAlmacen').val(factura.fecha_compromiso) : $('#fechaCompromisoAlmacen').val('<?= date('Y-m-d') ?>');
+                    factura.dias_alerta ? $('#diasAlertaAlmacen').val(factura.dias_alerta) : $('#diasAlertaAlmacen').val('0');
+                    
                     
                     //Agregamos un boton para guardar la validacion de la factura y otro para cancelar y regresar a facturas
                     // $('#divTablaFacturas').html('<button class="btn btn-primary btn-sm ml-2 mt-2" id="btnGuardarValidacionFactura"><i style=" color: #f6fcfb;" data-feather="save"></i> Guardar Validación</button>'+
@@ -1338,10 +1343,10 @@ table.tablaPequena tbody td {
                     tabla += '<th>Proveedor</th>';
                     tabla += '<th>Bodega</th>';
                     tabla += '<th>Cantidad Esperada</th>';
-                    tabla += '<th>Monto Neto de la compra solicitada</th>';
+                    tabla += '<th>Monto Neto de la<br>compra solicitada</th>';
                     tabla += '<th>Fecha de Solicitud</th>';
                     tabla += '<th>Facturas</th>';
-                    tabla += '<th>Estado</th>';
+                    tabla += '<th>Validar</th>';
                     tabla += '</tr>';
                     tabla += '</thead>';
                     tabla += '<tbody>';
@@ -1351,8 +1356,8 @@ table.tablaPequena tbody td {
                         tabla += '<td>'+compra.id+'</td>';
                         tabla += '<td>'+compra.nombre_proveedor+'</td>';
                         tabla += '<td>'+compra.nombre_bodega+'</td>';
-                        tabla += '<td>'+compra.total_esperado+'</td>';
-                        tabla += '<td>'+compra.total+'</td>';
+                        tabla += '<td class="dt-right">'+compra.total_esperado+'</td>';
+                        tabla += '<td class="dt-right">'+compra.total+'</td>';
                         tabla += '<td>'+compra.alta+'</td>';
                         tabla += '<td>'+compra.facturas+'</td>';
                         tabla += '<td>'+compra.btn+'</td>';
@@ -1368,7 +1373,7 @@ table.tablaPequena tbody td {
                     tabla += '<th>Monto Neto de la compra solicitada</th>';
                     tabla += '<th>Fecha de Solicitud</th>';
                     tabla += '<th>Facturas</th>';
-                    tabla += '<th>Estado</th>';
+                    tabla += '<th>Validar</th>';
                     tabla += '</tr>';
                     tabla += '</tfoot>';
                     tabla += '</table>';

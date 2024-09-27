@@ -102,129 +102,142 @@ table.tablaPequena tbody td {
 
 </style>
 
-
-<div class="page-header layout-top-spacing title-header">
-    <div class="pge-title" style="margin-left: 3.5%;">
-        <h3 id="tituloPagina">&nbsp; Planificador de precios de venta</h3>
-    </div>
-</div>
 <?php
 
 $compra = new Compra();
 $proveedores = $compra->getProveedores();
 ?>
 
-<div class="card card-principal">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-3">
-                <label for="miSelect">Selecciona un proveedor:</label>
-                <select id="selectProveedor">
-                    <option value="0">Seleccione un proveedor</option>
-                    <?php
-                foreach ($proveedores as $proveedor) {
-                    echo "<option value='".$proveedor['id']."'>".$proveedor['corto']."</option>";
-                }
-                ?>
-                </select>
-            </div>
 
-            <div class="col-md-4">
-                <label for="miSelect">Selecciona bodega(s):</label>
-                <select id="selectBodega" multiple></select>
-            </div>
-
-            <div class="col-md-5">
-                <label for="miSelect">Selecciona Unidad(es) Operaiva(s):</label>
-                <select id="selectUOperativas" multiple></select>
-            </div>
-        </div>
-                
-        <div class="row">
-            <div class="col-md-4">
-                <label for="miSelect">Fecha de Planeación:</label>
-                <input type="date" id="verFecha" class="form-control form-control-sm" value="<?= date("Y-m-d",strtotime(date("Y-m-d")."+ 1 days")) ?>" min="<?= date("Y-m-d",strtotime(date("Y-m-d")."+ 1 days")) ?>">
-            </div>
-            <div class="col-md-2">
-                <button id="btnBuscarProductos" class="btn btn-primary btn-lg mt-lg-4"><i class="feather-16" data-feather="list"></i> Consultar/Listar</button>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-10">
-                <div class="row justify-content-center">
-                    <div id="divMessage" class="col-md-8 mt-lg-4"></div>
+<div style="padding-left: 80px; padding-right: 10px;" >
+    <div class="container-fluid">
+        
+        <div class="row justify-content-between">
+            <div class="col-4 mt-4">
+                <div class="page-title" style="float: none;">
+                    <h3>Planificador de precios de venta</h3>
                 </div>
             </div>
+            <div class="col-4 mt-4 text-right">
+                <button type="button" class="btn btn-info btn-circle dt-right" data-toggle="modal" data-target="#modalAyuda" >?</button>
+            </div>
         </div>
-        <hr>
+    
 
+        <!-- Aqui vamos a pintar todo lo que se requiera en la vista -->
+        <div class="statbox widget box box-shadow widget-content-area p-3  mt-3">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="miSelect">Selecciona un proveedor:</label>
+                    <select id="selectProveedor">
+                        <option value="0">Seleccione un proveedor</option>
+                        <?php
+                    foreach ($proveedores as $proveedor) {
+                        echo "<option value='".$proveedor['id']."'>".$proveedor['corto']."</option>";
+                    }
+                    ?>
+                    </select>
+                </div>
 
-        <!-- <div class="row">
-            <div class="col-md-12">
-                <div class="page-header layout-top-spacing title-header mt-lg-4">
-                    <div class="pge-title">
-                        <h5>Productos</h5>
+                <div class="col-md-4">
+                    <label for="miSelect">Selecciona bodega(s):</label>
+                    <select id="selectBodega" multiple></select>
+                </div>
+
+                <div class="col-md-5">
+                    <label for="miSelect">Selecciona Unidad(es) Operaiva(s):</label>
+                    <select id="selectUOperativas" multiple></select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="miSelect">Fecha de Planeación:</label>
+                    <input type="date" id="verFecha" class="form-control form-control-sm" value="<?= date("Y-m-d",strtotime(date("Y-m-d")."+ 1 days")) ?>" min="<?= date("Y-m-d",strtotime(date("Y-m-d")."+ 1 days")) ?>">
+                </div>
+                <div class="col-md-2">
+                    <button id="btnBuscarProductos" class="btn btn-primary btn-lg mt-lg-4"><i class="feather-16" data-feather="list"></i> Consultar/Listar</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="row justify-content-center">
+                        <div id="divMessage" class="col-md-8 mt-lg-4"></div>
                     </div>
                 </div>
             </div>
-        </div> -->
+            <hr>
 
-        <br>
-        <br>
-        <div class="row align-items-end mb-lg-4">
-            <div class="col-md-12 d-flex justify-content-end">
-                <!-- <button id="mostrarFechas" class="btn btn-info ml-1"><i class="feather-16" data-feather="search"></i> Mostrar productos</button> -->
-                <!-- <button id="btnDefinirGSV" disabled="true" class="btn btn-primary ml-1"><i class="feather-16" data-feather="edit"></i> Definir GSV</button> -->
-                <!-- <button id="btnAddDescuento" disabled="true" class="btn btn-success ml-1"><i class="feather-16" data-feather="plus"></i> Agregar/Reactivar descuento</button> -->
-                <!-- <button id="btnExportarExcel" class="btn btn-primary ml-1"><i class="feather-16" data-feather="file-text"></i> Exportar a Excel</button> -->
-            </div>
-        </div>
 
-        <div class="row mt-lg-4">
-            <!-- <div class="col-md-7">
-                <label for="prov">Proveedor:</label>
-                <label class="form-control form-control-sm" id="nombreProveedor"></label>
-            </div>
 
-            <div class="col-md-5">
-                <label for="bod">Bodega:</label>
-                <label class="form-control form-control-sm" id="nombreBodega"></label>
+            <!-- <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header layout-top-spacing title-header mt-lg-4">
+                        <div class="pge-title">
+                            <h5>Productos</h5>
+                        </div>
+                    </div>
+                </div>
             </div> -->
 
-            <!-- <div class="col-md-2">
-                <label for="fecha">Fecha:</label>
-                <input type="date" id="verFecha" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>">
-            </div> -->
-        </div>
+            <br>
+            <br>
+            <div class="row align-items-end mb-lg-4">
+                <div class="col-md-12 d-flex justify-content-end">
+                    <!-- <button id="mostrarFechas" class="btn btn-info ml-1"><i class="feather-16" data-feather="search"></i> Mostrar productos</button> -->
+                    <!-- <button id="btnDefinirGSV" disabled="true" class="btn btn-primary ml-1"><i class="feather-16" data-feather="edit"></i> Definir GSV</button> -->
+                    <!-- <button id="btnAddDescuento" disabled="true" class="btn btn-success ml-1"><i class="feather-16" data-feather="plus"></i> Agregar/Reactivar descuento</button> -->
+                    <!-- <button id="btnExportarExcel" class="btn btn-primary ml-1"><i class="feather-16" data-feather="file-text"></i> Exportar a Excel</button> -->
+                </div>
+            </div>
+
+            <div class="row mt-lg-4">
+                <!-- <div class="col-md-7">
+                    <label for="prov">Proveedor:</label>
+                    <label class="form-control form-control-sm" id="nombreProveedor"></label>
+                </div>
+
+                <div class="col-md-5">
+                    <label for="bod">Bodega:</label>
+                    <label class="form-control form-control-sm" id="nombreBodega"></label>
+                </div> -->
+
+                <!-- <div class="col-md-2">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="verFecha" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>">
+                </div> -->
+            </div>
 
 
 
 
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="page-header layout-top-spacing title-header mt-lg-4">
-                    <div class="pge-title">
-                        <h5 id="tituloTabla">Productos</h5>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header layout-top-spacing title-header mt-lg-4">
+                        <div class="pge-title">
+                            <h5 id="tituloTabla">Productos</h5>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-12" id="divTablaProductos">
+            <div class="row">
+                <div class="col-md-12" id="divTablaProductos">
 
+                </div>
             </div>
-        </div>
 
-        <!-- <div class="row">
-            <div  class="col-md-12 col-lg-12">
-            </div>
-        </div> -->
+            <!-- <div class="row">
+                <div  class="col-md-12 col-lg-12">
+                </div>
+            </div> -->
 
 
-    </div> <!-- fin card-body -->
-</div> <!-- fin card-principal -->
+
+        </div> <!-- fin statbox -->
+    </div> <!-- fin container-fluid -->
+</div> <!-- fin div padding-left -->
 
 
 <!-- Modal para modificar un descuento existente -->
@@ -1180,9 +1193,9 @@ $(document).ready(function() {
         // Obtenemos el margen actual del producto para compararlo con el nuevo margen y obtener la diferencia porcentual
         if (unidadesOperativasSeleccionadas.length === 1) {
             var margenActual = parseFloat($('#margenActual-' + id).text());
-            $('#diffPorcentaje-' + id).text(parseFloat(margenActual - valor).toFixed(2));
+            $('#diffPorcentaje-' + id).text(parseFloat(valor - margenActual).toFixed(2));
             // Actualizamos el atributo valorReal de diferencial de porcentaje
-            $('#diffPorcentaje-' + id).attr('valorReal', parseFloat(margenActual - valor));
+            $('#diffPorcentaje-' + id).attr('valorReal', parseFloat(valor - margenActual));
         }
 
         //Calculamos el precio con el margen nuevo
@@ -1317,11 +1330,6 @@ function revertirDescuentosYAplicarSeleccionados(precioFinal, descuentos, descue
         precioConDescuentosSeleccionados: precioConDescuentosSeleccionados.toFixed(2)
     };
 }
-
-
-
-
-
 
 function calculaCostoPactado(id){
     //Obtenemos el precio de lista
@@ -1476,6 +1484,7 @@ function  pintaHojaTrabajoPVta(idProveedor, bodegas, uOperativas, fecha) {
                     tabla += '<th><small>' + columna.nombre.replace(/ /g, '<br>') + '</small></th>';
                 });
 
+                //Costo pactado
                 tabla += '<th><small>Costo<br>Pactado</small></th>';
                 
                 // Recorrer el array de descuentos despues de CP
@@ -1491,12 +1500,12 @@ function  pintaHojaTrabajoPVta(idProveedor, bodegas, uOperativas, fecha) {
                     tabla += '<th><small>Costo X<br>Unidad<br>de Venta</small></th>';
                     tabla += '<th><small>Margen<br>Actual</small></th>';
                 }
-                tabla += '<th><small>Margen<br>Nuevo<br>&nbsp; (<b>%</b>)<button class="btn btn-sm btn-primary ml-lg-2 btn-small" id="margenCopy"><i class="feather-12" data-feather="copy"></i></button></small></th>';
+                tabla += '<th><small>Margen<br>Nuevo<br>&nbsp; (<b>%</b>)<button title="Copiar margen a todo" class="btn btn-sm btn-primary ml-lg-2 btn-small" id="margenCopy"><i class="feather-12" data-feather="copy"></i></button></small></th>';
                 tabla += '<th><small>Precio<br>Nuevo</small></th>';
                 //Tampoco tiene sentido mostrar la diferencia porcentual si se seleccionaron varias bodegas o uOperativas
                 if (tamUOperativas <= 1) {
                     tabla += '<th><small>Diff<br>&nbsp; %</small></th>';
-                    tabla += '<th><small>Fecha<br><small></th>';
+                    tabla += '<th><small>Fecha<br>Ult. Cambio<small></th>';
                 }
                 tabla += '</tr>';
                 tabla += '</thead>';
@@ -1553,9 +1562,9 @@ function  pintaHojaTrabajoPVta(idProveedor, bodegas, uOperativas, fecha) {
                         //Diferencia porcentual
                         var diffPorcentaje = parseFloat(producto.margenActual) - parseFloat(producto.margenNuevo);
                         // console.log("Diferencia porcentual: "+diffPorcentaje);
-                        tabla += '<td class="dt-right" id="diffPorcentaje-' + producto.id_pm +'" valorReal="' +  diffPorcentaje + '">' + parseFloat(diffPorcentaje).toFixed(2) + '</td>';
+                        tabla += '<td class="dt-right" id="diffPorcentaje-' + producto.id_pm +'" valorReal="' + diffPorcentaje + '">' + parseFloat(diffPorcentaje).toFixed(2) + '</td>';
                         //Fecha si en null escribimos --/--/----
-                        var fecha = producto.fecha ? producto.fecha : '--/--/--  ';
+                        var fecha = producto.fecha_cambio ? producto.fecha_cambio : '--/--/--  ';
                         tabla += '<td class="dt-right">' + fecha + '</td>';
                     }
                     
@@ -1564,7 +1573,7 @@ function  pintaHojaTrabajoPVta(idProveedor, bodegas, uOperativas, fecha) {
                 tabla += '</tbody>';
                 tabla += '</table> <div class="mt-4 row align-items-center" id="divTotalesFactura">';
                 //Agregamos un div para un boton de guardar cambios
-                tabla += '<div class="text-center"><button class="btn btn-success btn-lg ml-3" disabled id="btnGuardarCambios"><i class="feather-16" data-feather="save"></i> Guardar cambios</button></div>';
+                tabla += '<div class="text-center"><button class="btn btn-success btn-lg ml-lg-3" disabled id="btnGuardarCambios"><i class="feather-16" data-feather="save"></i> Guardar cambios</button></div>';
 
                 $('#divTablaProductos').html(tabla);
                 //Alamcenamos los datos del respose en un objeto de sesión sessionStorage

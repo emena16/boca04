@@ -90,6 +90,13 @@ class GmcvPrecioController extends db {
         $gmcvPrecio = GmcvPrecio::getPrecioListaByIdProd($args['id_prod'], $args['fechaFactura'], $compra->id_bodega);
         return $gmcvPrecio;        
     }
+
+    public function getFechasCambiosPrecioLista($args = []){
+        $gmcvPrecio = new GmcvPrecio();
+        //Comvertimos el array de bodegas en un string
+        $args['bodegas'] = implode(',', $args['bodegas']);
+        return $gmcvPrecio->getFechasCambiosPrecioLista($args['id_prov'], $args['bodegas']);
+    }
  
 }
 ?>

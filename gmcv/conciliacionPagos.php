@@ -107,8 +107,9 @@ table.tablaPequena tbody td {
 </style>
 
 <div class="page-header layout-top-spacing title-header">
-    <div class="pge-title" style="margin-left: 3.5%;">
+    <div class="pge-title" style="display: flex; justify-content: space-between; align-items: center; margin-left: 3.5%;">
         <h3>&nbsp; Conciliación de pagos</h3>
+        <button type="button" class="btn btn-info btn-circle" data-toggle="modal" data-target="#modalAyuda" style="border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; margin-right: 20px;" title="Ayuda para la vista">?</button>
     </div>
 </div>
 
@@ -157,6 +158,13 @@ table.tablaPequena tbody td {
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row justify-content-center">
+                    <div id="divMessage" class="col-md-6"></div>
+                </div>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-md-12"><div class="page-header layout-top-spacing title-header mt-lg-4">
@@ -203,9 +211,9 @@ table.tablaPequena tbody td {
                             <th>Fecha</th>
                             <th>Monto</th>
                             <th>Saldo</th>
-                            <th>Id Nota de CR</th>
+                            <th>Id Nota de Crédito</th>
                             <th>Facturas</th>
-                            <th>Acciones</th>
+                            <th>Editar</th>
                     </thead>
                     <tbody>
                         <!-- Aqui vamos a pintar los documentos de pago del proveedor -->
@@ -220,7 +228,7 @@ table.tablaPequena tbody td {
 <!--- Agregamos una tarjeta principal nueva para gestionar las notas de credito del proveedor -->
 <div class="page-header layout-top-spacing title-header">
     <div class="pge-title" style="margin-left: 3.5%;">
-        <h3>&nbsp; Docummentos de Pago</h3>
+        <h3>&nbsp; Documentos de Pago</h3>
     </div>
 </div>
 <!-- Card principal para gestionar las notas de credito -->
@@ -245,7 +253,7 @@ table.tablaPequena tbody td {
                             <th>Saldo</th>
                             <th>Id Pago</th>
                             <th>Facturas</th>
-                            <th>Acciones</th>
+                            <th>Editar</th>
                     </thead>
                     <tbody>
                         <!-- Aqui vamos a pintar los documentos de pago del proveedor -->
@@ -257,6 +265,52 @@ table.tablaPequena tbody td {
     </div> <!-- fin card-body -->
 </div> <!-- fin card-principal -->
 
+<!-- Creamos un modal para mostrar ayuda de que hacer en la vista -->
+<div class="modal fade" id="modalAyuda" tabindex="-1" role="dialog" aria-labelledby="modalAyudaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <input type="hidden" id="idProveedor" value="" name="idProveedor">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAyudaLabel">Ayuda para la vista de conciliación de pagos</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h5>Indicadores de colores para esta vista</h5>
+                        <table class="table table-sm" border="1" style="border-collapse: collapse;">
+                            <tr>
+                                <th style="text-align: center;">Fechas</th>
+                                <th style="text-align: center;">Saldos</th>
+                            </tr>
+
+                            <tr>
+                                <th style="background-color: red; color: white; ">Saldo Vencido</th>
+                                <th style="background-color: white; ">Sin abonos</th>
+                            </tr>
+
+                            <tr>
+                                <th style="background-color: orange;">Saldo por vencer</th>
+                                <th style="background-color: yellow;">Con abonos (Saldo pendiente)</th>
+                            </tr>
+
+                            <tr>
+                                <th style="text-align: center;"> -- </th>
+                                <th style="background-color: green; color: white;">Saldo pagado</th>
+
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal para agregar abonos a las facturas -->
 <div class="modal fade" id="modalAbonosFactura" tabindex="-1" role="dialog" aria-labelledby="modalAbonosFacturaLabel" aria-hidden="true">
@@ -444,11 +498,11 @@ table.tablaPequena tbody td {
                 <div class="row mb-lg-4">
                     <div class="col-md-3">
                         <label for="fechaInicioDocumentoPago">Fecha Inicio:</label>
-                        <input type="date" id="fechaInicioDocumentoPago" class="form-control">
+                        <input type="date" id="fechaInicioDocumentoPago" class="form-control" value="<?=date('Y-m-d' ,strtotime('-1 month'))?>">
                     </div>
                     <div class="col-md-3">
                         <label for="fechaFinDocumentoPago">Fecha Fin:</label>
-                        <input type="date" id="fechaFinDocumentoPago" class="form-control">
+                        <input type="date" id="fechaFinDocumentoPago" class="form-control" value="<?=date('Y-m-d')?>">
                     </div>
                 </div> <!-- Cierre de la fila -->
             </div>
@@ -464,6 +518,10 @@ table.tablaPequena tbody td {
 <!-- Script para el select2 -->
 <script src="../../../sys/bocampana_vista/plugins/select2/select2.min.js"></script>
 <script src="../../../sys/bocampana_vista/plugins/select2/es.js"></script>
+
+<!-- Scripts de funciones generales -->
+<script src="js/functions.js"></script>
+
 <script>
     //Variable global para almacenar el nombre del proveedor
     var nombreProveedor = '';
@@ -475,11 +533,18 @@ table.tablaPequena tbody td {
             multiple: false,
             closeOnSelect: true,
             search: true,
-            placeholder: "Seleccione un proveedor" // Placeholder
+            placeholder: "Seleccione un proveedor"
         });
 
         //Creamos un eventos que se dispare al hacer click en el boton de buscar facturas
         $('#btnBuscarFacturas').click(function(){
+            //Verificamos que se haya seleccionado un proveedor
+            var proveedor = $('#selectProveedor').val();
+            if(proveedor == 0){
+                alert("Seleccione un proveedor");
+                return;
+            }
+
             pintaFacturas();
             pintaNotasCredito();
             feather.replace();
@@ -661,7 +726,7 @@ table.tablaPequena tbody td {
                     pintaNotasCredito();
                     $('#modalEliminarAbonosFactura').modal('hide');
                     setTimeout(function(){
-                        alert(response.message);
+                        messageAlert(response.message, 'success',false);
                     }, 200);
                 },
                 error: function(response){
@@ -712,7 +777,7 @@ table.tablaPequena tbody td {
                         pintaNotasCredito();
                         $('#modalAbonosFactura').modal('hide');
                         setTimeout(function(){
-                            alert(response.message);
+                            messageAlert(response.message, 'success',false);
                         }, 200);
                     }else{
                         alert(response.message);
@@ -790,10 +855,10 @@ table.tablaPequena tbody td {
                         //Cerramos el modal
                         $('#modalAgregarDocumentoPago').modal('hide');
                         setTimeout(function(){
-                            alert(response.message);
+                            messageAlert(response.message, 'success',false);
                         }, 200);
                     }else{
-                        alert(response.message);
+                        messageAlert(response.message, 'warning',false);
                     }
                 },
                 error: function(response){
@@ -807,6 +872,7 @@ table.tablaPequena tbody td {
             $('#divTablaFacturas').html('');
             $('#tablaNotasCR').DataTable().clear().draw();
             $('#tablaDocsPago').DataTable().clear().draw();
+            $('#divMessage').empty();
         });
 
         $(document).on('click', '.btnEditPago', function(){
@@ -885,10 +951,10 @@ table.tablaPequena tbody td {
                         pintaNotasCredito();
                         $('#modalEditarDocumentoPago').modal('hide');
                         setTimeout(function(){
-                            alert(response.message);
+                            messageAlert(response.message, 'success',false);
                         }, 200);
                     }else{
-                        alert(response.message);
+                        messageAlert(response.message, 'warning',false);
                     }
                 },
                 error: function(response){
@@ -922,7 +988,7 @@ table.tablaPequena tbody td {
                 alert("La fecha de inicio no puede ser mayor a la fecha fin");
                 return;
             }
-            console.log("Argumentos: "+fechaInicio+" "+fechaFin+" "+$(this).attr('documento')+" "+$('#selectProveedor').val() + "documento: "+$(this).attr('documento'));
+            // console.log("Argumentos: "+fechaInicio+" "+fechaFin+" "+$(this).attr('documento')+" "+$('#selectProveedor').val() + "documento: "+$(this).attr('documento'));
             var documento = $(this).attr('documento');
             $.ajax({
                 url: 'services/mainService.php',

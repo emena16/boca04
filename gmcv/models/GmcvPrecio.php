@@ -252,6 +252,8 @@ class GmcvPrecio extends db{
         GROUP BY  p.id
         ORDER BY  p.comercial, p.id";
         $result = db::query($query);
+        //Guardamos el query en un archivo para debug
+        file_put_contents('query_getPreciosOficina.sql', $query);
 
 		//Creamos modelos base para agregar a los productos
         $descuentoMuestra = array(
@@ -403,6 +405,8 @@ class GmcvPrecio extends db{
         
             // Obntemos las presentaciones del producto y le sacamos una copia al row para agregarlo
             $presentaciones = $this->getPresentacionesProducto($proveedor, $bodegas, $oficinas, $row['id']);
+            //almacenamos una copia en un archivo para debug
+            file_put_contents('JSON_presentaciones.json', json_encode($presentaciones));
             //Recorremos las presentaciones para agregarlas al row
             foreach ($presentaciones as $presentacion) {
                 $row_aux = $row;
@@ -717,6 +721,18 @@ class GmcvPrecio extends db{
         //Retornamos el resultado
         return $row;
 
+    }// Fin getPrecioListaByIdProd
+
+    public function getFechasCambiosPrecioLista($id_prov, $bodegas) {
+        $query = "SELECT gp.ini AS fechaCambioPrecio
+        FROM  gmcv_precio gp
+        WHERE  gp.id_bodega IN ($bodegas)  
+        AND gp.id_prov = $id_prov AND gp.ini BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 YEAR) AND DATE_ADD(CURDATE(), INTERVAL 3 MONTH)  
+        AND gp.id_status = 4
+        GROUP BY  gp.id_bodega, gp.ini
+        ORDER BY  gp.ini DESC";
+        $result = db::query($query);
+        return db::fetch_all($result);
     }
 
 

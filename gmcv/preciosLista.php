@@ -27,6 +27,9 @@ require_once 'models/Compra.php';
 <!-- estilos para el select2 -->
 <link rel="stylesheet" type="text/css" href="../../../sys/bocampana_vista/plugins/select2/select2.min.css">
 <link rel="stylesheet" type="text/css" href="../../../sys/bocampana_vista/plugins/select2/es.js">
+<!-- Estilos para el flatpickr -->
+<link rel="stylesheet" type="text/css" href="../../../sys/bocampana_vista/plugins/flatpickr/flatpickr.css">
+<link rel="stylesheet" type="text/css" href="../../../sys/bocampana_vista/plugins/flatpickr/custom-flatpickr.css">
 
 <style>
 .dt-right {
@@ -99,144 +102,140 @@ table.tablaPequena tbody td {
     height: 10px;
 }
 
+/* Personalización de fechas resaltadas */
+.flatpickr-day.selected-date {
+    background-color: #ffeb3b; /* Color de fondo para las fechas resaltadas */
+    color: black;
+}
+
 </style>
 <!-- Estilos para el driver.js -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
 
 
-<div class="page-header layout-top-spacing title-header">
+<!-- <div class="page-header layout-top-spacing title-header">
     <div class="pge-title" style="display: flex; justify-content: space-between; align-items: center; margin-left: 3.5%;">
         <h3>Precio Lista (GSV) y Descuentos</h3>
         <button type="button" class="btn btn-info btn-circle" data-toggle="modal" data-target="#modalAyuda" style="border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; margin-right: 20px;">?</button>
     </div>
-</div>
+</div> -->
 <?php
-
 $compra = new Compra();
 $proveedores = $compra->getProveedores();
 ?>
 
-<div class="card card-principal">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4">
-                <label for="miSelect">Selecciona un proveedor:</label>
-                <select id="selectProveedor">
-                    <option value="0">Seleccione un proveedor</option>
-                    <?php
-                foreach ($proveedores as $proveedor) {
-                    echo "<option value='".$proveedor['id']."'>".$proveedor['corto']."</option>";
-                }
-                ?>
-                </select>
-            </div>
 
-            <div class="col-md-6">
-                <label for="miSelect">Selecciona bodega(s):</label>
-                <select id="selectBodega"></select>
-            </div>
 
-            <div class="col-md-2">
-                <label for="fecha">Fecha:</label>
-                <input type="date" id="verFecha" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>">
-                <small id="emailHelp" class="form-text text-muted">Fecha inicial de la vigencia de precios de lista.</small>
-            </div>
-
-        </div>
-        
-        <div class="row">
-            <div class="col-md-2">
-                <button id="btnBuscarProductos" class="btn btn-primary btn-lg mt-lg-4"><i class="feather-16" data-feather="list"></i> Consultar / Listar</button>
-            </div>
-            <div class="col-md-10">
-                <div class="row justify-content-center">
-                    <div id="divMessage" class="col-md-8"></div>
+<div style="padding-left: 80px; padding-right: 10px;" >
+    <div class="container-fluid">
+        <div class="row justify-content-between">
+            <div class="col-4 mt-4">
+                <div class="page-title" style="float: none;">
+                    <h3>Precio Lista (GSV) y Descuentos</h3>
                 </div>
             </div>
+            <div class="col-4 mt-4 text-right">
+                <button type="button" class="btn btn-info btn-circle dt-right" data-toggle="modal" data-target="#modalAyuda" >?</button>
+            </div>
         </div>
 
-        <!-- <div class="row">
-            <div class="col-md-12">
-                <div class="page-header layout-top-spacing title-header mt-lg-4">
-                    <div class="pge-title">
-                        <h5>Productos</h5>
+        <!-- Aqui vamos a pintar todo lo que se requiera en la vista -->
+        <div class="statbox widget box box-shadow widget-content-area p-3  mt-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="miSelect">Selecciona un proveedor:</label>
+                    <select id="selectProveedor">
+                        <option value="0">Seleccione un proveedor</option>
+                        <?php
+                    foreach ($proveedores as $proveedor) {
+                        echo "<option value='".$proveedor['id']."'>".$proveedor['corto']."</option>";
+                    }
+                    ?>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="miSelect">Selecciona bodega(s):</label>
+                    <select id="selectBodega"></select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="verFecha" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>">
+                    <small id="emailHelp" class="form-text text-muted">Fecha inicial de la vigencia de precios de lista.</small>
+                </div>
+            </div>    
+
+            <div class="row">
+                <div class="col-md-2">
+                    <button id="btnBuscarProductos" class="btn btn-primary btn-lg mt-lg-4"><i class="feather-16" data-feather="list"></i> Consultar / Listar</button>
+                </div>
+                <div class="col-md-10">
+                    <div class="row justify-content-center">
+                        <div id="divMessage" class="col-md-8"></div>
                     </div>
                 </div>
             </div>
-        </div> -->
 
-        <br>
-        <br>
-        <div class="row align-items-end mb-lg-4">
-            <div class="col-md-12 d-flex justify-content-end">
-                <!-- <button id="mostrarFechas" class="btn btn-info ml-1"><i class="feather-16" data-feather="search"></i> Mostrar productos</button> -->
-                <button id="btnDefinirGSV" disabled="true" class="btn btn-primary ml-1"><i class="feather-16" data-feather="edit"></i> Definir GSV</button>
-                <button id="btnAddDescuento" disabled="true" class="btn btn-primary ml-4"><i class="feather-16" data-feather="plus"></i> Agregar/Reactivar descuento</button>
-                <!-- <button id="btnExportarExcel" disabled="true" class="btn btn-primary ml-1"><i class="feather-16" data-feather="file-text"></i> Exportar a Excel</button> -->
-            </div>
-        </div>
-
-        <!-- <div class="row mt-lg-4">
-            <div class="col-md-7">
-                <label for="prov">Proveedor:</label> -->
-                <label hidden class="form-control form-control-sm" id="nombreProveedor"></label>
-            <!-- </div> -->
-
-            <!-- <div class="col-md-3">
-                <label for="bod">Bodega:</label> -->
-                <label hidden class="form-control form-control-sm" id="nombreBodega"></label>
-            <!-- </div> -->
-
-            <!-- <div class="col-md-2">
-                <label for="fecha">Fecha:</label>
-                <input type="date" id="verFecha" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>">
+            <!-- <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header layout-top-spacing title-header mt-lg-4">
+                        <div class="pge-title">
+                            <h5>Productos</h5>
+                        </div>
+                    </div>
+                </div>
             </div> -->
-        </div>
+            <br>
+            <br>
+            
+            
+            <!-- <div class="row mt-lg-4">
+                <div class="col-md-7">
+                    <label for="prov">Proveedor:</label> -->
+                    <label hidden class="form-control form-control-sm" id="nombreProveedor"></label>
+                <!-- </div> -->
 
+                <!-- <div class="col-md-3">
+                    <label for="bod">Bodega:</label> -->
+                    <label hidden class="form-control form-control-sm" id="nombreBodega"></label>
+                <!-- </div> -->
 
+                
+            <!-- </div> -->
+                
+            
+            <br>
+            <br>
+            <div class="row align-items-end mb-lg-4">
+                <div class="col-md-12 d-flex justify-content-end">
+                    <!-- <button id="mostrarFechas" class="btn btn-info ml-1"><i class="feather-16" data-feather="search"></i> Mostrar productos</button> -->
+                    <button id="btnDefinirGSV" disabled="true" class="btn btn-primary ml-1"><i class="feather-16" data-feather="edit"></i> Definir GSV</button>
+                    <button id="btnAddDescuento" disabled="true" class="btn btn-primary ml-4"><i class="feather-16" data-feather="plus"></i> Agregar/Reactivar descuento</button>
+                    <!-- <button id="btnExportarExcel" disabled="true" class="btn btn-primary ml-1"><i class="feather-16" data-feather="file-text"></i> Exportar a Excel</button> -->
+                </div>
+            </div>
 
-
-
-        <div class="row">
-            <div class="col-md-4">
-                <div class="page-header layout-top-spacing title-header mt-lg-4">
-                    <div class="pge-title">
-                        <h5 id="tituloTabla"></h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="page-header layout-top-spacing title-header mt-lg-4">
+                        <div class="pge-title">
+                            <h5 id="tituloTabla"></h5>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Escribimos una tablita para describir los indicadores de colores -->
-            <!-- <div class="col-md-8 mb-3">
-                <table class="tablaPequena" border="1" style="border-collapse: collapse;">
-                    <caption style="caption-side: top; font-weight: bold; margin-bottom: 10px;">
-                        Indicador de colores
-                    </caption>
-                    <tr>
-                        <th style="background-color: yellow;">Precio de lista modificado</th>
-                        <th style="background-color: yellow;">Descuento antes de CP modificado</th>
-                        <th style="background-color: yellow;">Descuento después de CP modificado</th>
-                    </tr>
-                </table>
+
+            <div class="row">
+                <div class="col-md-12" id="divTablaProductos">
+
+                </div>
             </div>
-             -->
 
         </div>
+    </div>
+</div>
 
-        <div class="row">
-            <div class="col-md-12" id="divTablaProductos">
-
-            </div>
-        </div>
-
-        <!-- <div class="row">
-            <div  class="col-md-12 col-lg-12">
-            </div>
-        </div> -->
-
-
-    </div> <!-- fin card-body -->
-</div> <!-- fin card-principal -->
 
 
 <!-- Modal para modificar un descuento existente -->
@@ -417,8 +416,10 @@ $proveedores = $compra->getProveedores();
 
 <!-- Script para el driver.js -->
 <script src="./js/functions.js"></script>
-<script>
+<!-- flatpickr -->
+<script src="../../../sys/bocampana_vista/plugins/flatpickr/flatpickr.js"></script>
 
+<script>
 // Definimos el driver.js para el tutorial
 const driver = window.driver.js.driver;
 const driverObj = driver();
@@ -472,6 +473,18 @@ $(document).ready(function() {
     });
 
 
+    //Inicializamos el flatpickr de la fecha 
+    flatpickr('#verFecha', {
+        // locale: 'es',
+        dateFormat: 'Y-m-d',
+        altFormat: 'j F Y',
+        // minDate: 'today',
+        altInput: true, 
+        defaultDate: 'today',
+        //Quitamos el atributo readonly al input verFecha
+        allowInput: true
+    });
+
     //Creamos un evento cuando se cambie el proveedor seleccionado
     $(document).on('change', '#selectProveedor', function() {
         //Desactivamos los botonoes de definir GSV y agregar descuento y exportar a excel
@@ -515,6 +528,74 @@ $(document).ready(function() {
         });
     });
 
+    //Creamos un evento cuando se cambie el select de bodegas seleccionadas ajustemos algunas fechas de verFecha
+    $(document).on('change', '#selectBodega', function() {
+        //Obtenemos la fecha seleccionada
+        var fecha = $('#verFecha').val();
+        //Obtnemos las bodegas seleccionadas
+        var bodegas = $('#selectBodega').val();
+        //Validamos que se haya seleccionado al menos una bodega
+        if (bodegas == null || bodegas.length == 0) {
+            return;
+        }
+        //Hacemos un request al service para obtener las fechas en las que ha habido cambios en los precios de lista
+        $.ajax({
+            url: 'services/mainService.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'getFechasCambiosPrecioLista',
+                controller: "GmcvPrecio",
+                args: {
+                    'id_prov': $('#selectProveedor').val(),
+                    'bodegas': bodegas
+                }
+            },
+            success: function(response) {
+                const fechasResaltadas = [];
+                //Recorremos el array de fechas y las agregamos al array de fechasCambioPrecio
+                $.each(response, function(index, fecha) {
+                    fechasResaltadas.push(fecha.fechaCambioPrecio);
+                });
+                //Limpiamos las fechas marcadas en el picker
+                flatpickr("#verFecha").clear();
+                // const picker = flatpickr("#verFecha", {
+                //     dateFormat: 'Y-m-d',
+                //     altFormat: 'j F Y',
+                //     altInput: true, 
+                //     defaultDate: 'today',
+                //     allowInput: true,
+                //     enable: fechasCambioPrecio
+                // });
+
+                // Inicializa Flatpickr y resalta las fechas
+                const picker = flatpickr("#verFecha", {
+                    // inline: true,  // Muestra el calendario en línea, puedes quitar esta opción si no quieres que esté siempre visible
+                    dateFormat: "Y-m-d", // Formato de fecha
+                    altFormat: 'j F Y',
+                    altInput: true, 
+                    disable: [], 
+                    allowInput: true,
+                    //Insertamos la fecha que habia seleccionada
+                    defaultDate: fecha,
+
+                    onDayCreate: function(dObj, dStr, fp, dayElem) {
+                        // Resalta las fechas especificadas
+                        if (fechasResaltadas.includes(dayElem.dateObj.toISOString().slice(0, 10))) {
+                            dayElem.classList.add("selected-date"); // Agrega clase personalizada
+                        }
+                    }
+                });
+
+                console.log(response);
+            },
+            error: function(error) {
+                console.log('Error al obtener las fechas de cambios de precios de lista');
+            }
+        });
+
+
+    });
 
     //Creamos un evento cuando se haga click en el botón de buscar productos
     $(document).on('click', '#btnBuscarProductos', function() {
@@ -778,7 +859,7 @@ $(document).ready(function() {
         //Obtenemos el id del descuento
         var idDescuento = $(this).attr('descuento');
         //Obtenemos el id del producto
-        console.log("ID del descuento: ", idDescuento);
+        // console.log("ID del descuento: ", idDescuento);
 
         //Llamaos al service para obtener los datos del descuento
         $.ajax({
@@ -1065,7 +1146,27 @@ $(document).ready(function() {
         pintaTablaProductosGSV($('#selectProveedor').val(), bodegasProveedor);
     });
         
-
+    //Creamos un evento para cuando se pulse el boton de copyDescuento a traves de la clase copyDescuento
+    $(document).on('click', '.copyDescuento', function(){
+        //Obtenemos el id del descuento
+        var descuentoAttr = $(this).attr('descuento');
+        //Separamos el nombre del descuento del id
+        var descuento = descuentoAttr.split('-')[0];
+        var id = descuentoAttr.split('-')[1];
+        //Recorremos el session productos para obtener los descuentos antes de costo pactado
+        var productos = JSON.parse(sessionStorage.getItem('productos'));
+        //Obtenemos el id del primer producto
+        var idProducto = productos[0].id;
+        var tasa = $('#'+descuento+'-'+idProducto).val();
+        //Recorremos los productos y les asignamos la tasa del descuento
+        $.each(productos, function(index, producto){
+            $('#'+descuento+'-'+producto.id).val(tasa);
+            //Activamos el evento change para que se actualicen los costos
+            $('#'+descuento+'-'+producto.id).trigger('change');
+        });
+        //Escribimos una alerta para informar al usuario que se copio el descuento
+        messageAlert('Descuento copiado a todos los productos', 'success', false);  
+    });
 
 
     //Actualizamos los iconos
@@ -1103,14 +1204,13 @@ function calculaCostoIngresoNeto(id){
     $.each(descuentosDespCP, function(index, descuento){
         var nombre = descuento.nombre.replace(/\s/g, "").toLowerCase();
         var tasa = $('#'+nombre+'-'+id).val();
-        console.log("Descuento: "+nombre+" Tasa: "+tasa);
         descuentosDespCPProducto += parseFloat(tasa);
     });
 
     //Aplicamos a costo pactado los descuentos después de costo pactado
     var costoIngreso = parseFloat(costoPactado) * (1 - (descuentosDespCPProducto / 100));
     //El costo ingreso se calculo asi: 
-    console.log("Costo ingreso: "+costoPactado+" * (1 - ("+descuentosDespCPProducto+" / 100)) = "+costoIngreso);
+    // console.log("Costo ingreso: "+costoPactado+" * (1 - ("+descuentosDespCPProducto+" / 100)) = "+costoIngreso);
 
     //Obtnemos los impuestos del producto, son parte de los atributos del input precioLista
     var iva = $('#precioLista-'+id).attr('iva');
@@ -1125,9 +1225,6 @@ function calculaCostoIngresoNeto(id){
     //Pintamos el costo bruto
     $('#bruto-'+id).text(parseFloat(costoIngreso).toFixed(2));
 }
-
-
-
 
 
 function pintaTablaProductosGSV(idProveedor, bodegas) {
@@ -1266,6 +1363,8 @@ function pintaTablaProductosGSV(idProveedor, bodegas) {
             sessionStorage.setItem('descuentosAntesCP', JSON.stringify(response.descuentosAntesCP));
             sessionStorage.setItem('descuentosDespCP', JSON.stringify(response.descuentosDespCP));
 
+
+
             // const driver = window.driver.js.driver;
             // const driverObj = driver();
             
@@ -1284,10 +1383,9 @@ function pintaTablaProductosGSV(idProveedor, bodegas) {
                 //Desabilitamos los botones de definir GSV y agregar descuento
                 $('#btnDefinirGSV').prop('disabled', true);
                 $('#btnAddDescuento').prop('disabled', true);
-
-
+            }else{
+                messageAlert('Datos cargados correctamente', 'success',false);
             }
-
             console.log(response);
 
         },
@@ -1344,13 +1442,15 @@ function pintaTablaProductosGSVEditable(idProveedor, bodegas) {
             tabla += '<th style="text-align: center;">Fecha fin</th>';
             //Iteramos los descuentos antes de costo pactado (CP)
             $.each(response.descuentosAntesCP, function(index, descuento) {
-                tabla += '<th style="text-align: center;">'+descuento.nombre+'</th>';
+                var nombre = descuento.nombre.replace(/\s/g, "").toLowerCase();
+                tabla += '<th style="text-align: center;">'+descuento.nombre+' <button descuento="'+nombre+'-'+descuento.id_descuento+'" title="Copiar a todo" class="btn btn-sm btn-primary ml-lg-2 btn-small copyDescuento"><i class="feather-12" data-feather="copy"></i></button></th>';
             });
             //Continuamos con costo pactado
             tabla += '<th style="text-align: center;">Costo<br>Pactado</th>';
             //Iteramos los descuentos antes de costo pactado (CP)
             $.each(response.descuentosDespCP, function(index, descuento) {
-                tabla += '<th style="text-align: center;">'+descuento.nombre+'</th>';
+                var nombre = descuento.nombre.replace(/\s/g, "").toLowerCase();
+                tabla += '<th style="text-align: center;">'+descuento.nombre+' <button descuento="'+nombre+'-'+descuento.id_descuento+'" title="Copiar a todo" class="btn btn-sm btn-primary ml-lg-2 btn-small copyDescuento"><i class="feather-12" data-feather="copy"></i></button></th>';
             });
             tabla += '<th style="text-align: center;">Bruto</th>';
             tabla += '<th style="text-align: center;">Neto</th>';

@@ -197,12 +197,125 @@ class Compra extends db {
 
     //Obtenemos el total de una compra  (suma de los productos)
     public function getTotalCompra($id_compra) {
-        $query = "SELECT SUM(costo_unitario * cant_solicitada) as total
-                FROM prod_compra
-                WHERE id_compra = $id_compra";
+        // $query = "SELECT SUM(costo_unitario * cant_solicitada) as total
+        //         FROM prod_compra
+        //         WHERE id_compra = $id_compra";
+        /*
+        Este query calcula el costo bruto de la compra sin considerar impuestos ni descuentos
+        SELECT 
+            SUM(
+                COALESCE(
+                    (SELECT gp.precio 
+                    FROM gmcv_precio gp 
+                    WHERE gp.id_prov = c.id_prov AND gp.id_bodega = c.id_bodega AND gp.id_prod = pc.id_prod AND gp.ini <= c.alta AND gp.id_status = 4
+                    ORDER BY gp.ini DESC 
+                    LIMIT 1),
+                    pc.costo_unitario -- Si no hay precio en gmcv_precio, usar el costo_unitario de prod_compra
+                ) * pc.cant_solicitada
+            ) AS total
+        FROM prod_compra pc
+        JOIN compra c ON pc.id_compra = c.id
+        WHERE pc.id_compra = 239554;
+        
+        */
+        $query = "SELECT 
+            pc.id_prod,
+            c.id_prov,
+            COALESCE(
+                (SELECT gp.precio 
+                FROM gmcv_precio gp 
+                WHERE gp.id_prod = pc.id_prod AND gp.id_bodega = c.id_bodega AND gp.id_prov = c.id_prov AND gp.ini <= c.alta AND gp.id_status = 4
+                ORDER BY gp.ini DESC 
+                LIMIT 1),
+                pc.costo_unitario -- Si no hay precio en gmcv_precio, usar costo_unitario de prod_compra
+            ) AS precioLista,
+
+            -- Obtener descuentos antes de CP para el bloque de la fecha de alta
+            IFNULL((SELECT SUM(gdp.descuento)
+                    FROM gmcv_descuento_producto gdp
+                    JOIN gmcv_descuento gd ON gd.id = gdp.id_descuento
+                    WHERE gdp.id_prod = pc.id_prod AND gdp.id_prov = c.id_prov AND gdp.id_bodega = c.id_bodega
+                    AND gdp.ini = (
+                        SELECT MAX(gdp2.ini)
+                        FROM gmcv_descuento_producto gdp2
+                        WHERE gdp2.id_prod = pc.id_prod
+                            AND gdp2.id_bodega = c.id_bodega
+                            AND gdp2.ini <= c.alta
+                            AND gdp2.id_status = 4
+                    ) AND gd.posteriorCP = 0 -- Solo descuentos antes de CP
+                    AND gdp.id_status = 4 -- Descuento activo
+            ), 0) AS sumaDescuentosAntesCP,
+
+            -- Obtener descuentos después de CP
+            IFNULL((SELECT SUM(gdp.descuento)
+                    FROM gmcv_descuento_producto gdp
+                    JOIN gmcv_descuento gd ON gd.id = gdp.id_descuento
+                    WHERE gdp.id_prod = pc.id_prod
+                    AND gdp.id_prov = c.id_prov
+                    AND gdp.id_bodega = c.id_bodega
+                    AND gdp.ini = (
+                        SELECT MAX(gdp2.ini)
+                        FROM gmcv_descuento_producto gdp2
+                        WHERE gdp2.id_prod = pc.id_prod
+                            AND gdp2.id_bodega = c.id_bodega
+                            AND gdp2.ini <= c.alta
+                            AND gdp2.id_status = 4
+                    )
+                    AND gd.posteriorCP = 1 -- Solo descuentos después de CP
+                    AND gdp.id_status = 4 -- Descuento activo
+            ), 0) AS sumaDescuentosDespuesCP,
+
+            -- Calcular CostoPactado aplicando el porcentaje de descuento
+            COALESCE(
+                (SELECT gp.precio 
+                FROM gmcv_precio gp 
+                WHERE gp.id_prod = pc.id_prod AND gp.id_bodega = c.id_bodega AND gp.id_prov = c.id_prov AND gp.ini <= c.alta AND gp.id_status = 4
+                ORDER BY gp.ini DESC 
+                LIMIT 1),
+                pc.costo_unitario
+            ) * (1 - (IFNULL((SELECT SUM(gdp.descuento)
+                    FROM gmcv_descuento_producto gdp
+                    JOIN gmcv_descuento gd ON gd.id = gdp.id_descuento
+                    WHERE gdp.id_prod = pc.id_prod
+                        AND gdp.id_prov = c.id_prov
+                        AND gdp.id_bodega = c.id_bodega
+                        AND gdp.ini = (
+                            SELECT MAX(gdp2.ini)
+                            FROM gmcv_descuento_producto gdp2
+                            WHERE gdp2.id_prod = pc.id_prod AND gdp2.id_bodega = c.id_bodega AND gdp2.ini <= c.alta AND gdp2.id_status = 4
+                        ) AND gd.posteriorCP = 0
+                    AND gdp.id_status = 4), 0) / 100)) AS CostoPactado,
+            si.iva AS tasaIVA,
+            si.ieps AS tasaIEPS,
+            si.iepsxl as iepsXL,
+            pc.cant_solicitada
+        FROM prod_compra pc
+        JOIN compra c ON pc.id_compra = c.id
+        LEFT JOIN producto p ON p.id = pc.id_prod
+        LEFT JOIN sys_impuestos si ON si.id = p.id_impuesto
+        WHERE pc.id_compra = $id_compra";
         $result = db::query($query);
-        $row = db::fetch_assoc($result);
-        return $row['total'];
+
+        //Tenemos parcialmente la información de la compra, ahora vamos a obtener el total de la compra
+        //Recorremos los productos de la compra y sumamos el total de la compra
+        $total = 0;
+        while ($row = db::fetch_assoc($result)) {
+            //Calculamos las tasas de IEPS e IVA
+            $totalPrecioLista = $row['precioLista'] * $row['cant_solicitada'];
+            $totalPrecioPactado = $row['CostoPactado'] * $row['cant_solicitada'];
+
+            $iepsxl = $row['iepsXL'] * $row['cant_solicitada'];
+            //Aplicamos la tasa de IESP a totalPrecioPactado
+            $totalIEPS = $row['tasaIEPS'] * $totalPrecioPactado;
+            //Aplicamos la tasa de IVA a totalPrecioPactado
+            $totalIVA = $row['tasaIVA'] * ($totalPrecioPactado + $totalIEPS + $iepsxl);
+            //Sumamos el total de la compra
+            $total += $totalPrecioPactado + $totalIEPS + $totalIVA + $iepsxl;
+        }
+        
+        // $row = db::fetch_assoc($result);
+        // return $row['total'];
+        return $total;
     }
 
 
@@ -355,8 +468,9 @@ class Compra extends db {
         COALESCE(SUM(cfp.cantidad_aceptada), 0) AS total_cantidad_aceptada, 
         COALESCE(SUM(cfp.cantidad_rechazada), 0) AS total_cantidad_rechazada, 
         pc.cant_solicitada, pc.costo_unitario, pc.prod_agregado, pc.id_compra, 
-        pc.id AS id_prod_compra, pc.cant_solicitada - COALESCE(SUM(cfp.cantidad_aceptada) + SUM(cfp.cantidad_rechazada), 0) AS cant_restante, 
-        COALESCE(SUM(cfp.cantidad_aceptada),0) + COALESCE(SUM(cfp.cantidad_rechazada),0) as cant_ingresada
+        pc.id AS id_prod_compra, pc.cant_solicitada - COALESCE(SUM(cfp.cantidad_facturada), 0) AS cant_restante, 
+        COALESCE(SUM(cfp.cantidad_aceptada),0) + COALESCE(SUM(cfp.cantidad_rechazada),0) as cant_ingresada,
+        COALESCE(SUM(cfp.cantidad_rechazada),0) as cant_rechazada
         FROM prod_compra pc
         LEFT JOIN producto p ON p.id = pc.id_prod
         LEFT JOIN gmcv_compra_factura_prod cfp ON cfp.id_prod_compra = pc.id
@@ -394,8 +508,6 @@ class Compra extends db {
 
             $data[] = $row;
         }
-
-
         return $data;
     }
 
@@ -528,7 +640,7 @@ class Compra extends db {
                     "productos" => array(),
                     "descuentosAntesCP" => array(),
                     "descuentosDespCP" => array(),
-                    "message" => "<strong>Error </strong> Los descuentos de las bodegas seleccionadas son diferentes, por lo que los precios de venta pueden variar.",
+                    "message" => "<strong>Error </strong> Los descuentos de las bodegas seleccionadas son diferentes, por lo que los precios de lista pueden variar.",
                     "statusMessage" => "danger",
                     "proveedor" => $proveedor
                 );

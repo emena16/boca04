@@ -153,6 +153,7 @@ class CompraFactura extends db {
     public function updateFacturaEntrada() {
         //Solo actualizamos los campos de fecha y fecha de llegada
         $query = "UPDATE " . $this->table_name . " SET 
+            uuid = '" . db::real_escape_string($this->uuid) . "',
             fecha = '" . db::real_escape_string($this->fecha) . "',
             fecha_llegada = '" . db::real_escape_string($this->fecha_llegada) . "'
             WHERE id = '" . db::real_escape_string($this->id) . "'";
@@ -659,7 +660,7 @@ class CompraFactura extends db {
         AND cf.fecha BETWEEN DATE('$fechaIni') AND DATE('$fechaFin') $status
         AND cf.validada = 1
         GROUP BY cf.id
-        ORDER BY cf.fecha DESC";
+        ORDER BY cf.fecha ASC";
         //Escribimos el query en un archivo de texto
         file_put_contents('getFacturasConciliar.txt', $query);
 
@@ -682,6 +683,8 @@ class CompraFactura extends db {
                 $row['colorSaldo'] = '#FFFF00'; // Amarillo si el saldo pendiente es mayor a 0 y no igual a totalAPagar
             } elseif ($row['saldoPendiente'] == 0) {
                 $row['colorSaldo'] = '#00FF00'; // Verde si el saldo pendiente es 0
+                //Eliminamos el color de la fecha compromiso si el saldo es 0
+                $row['colorFCompromiso'] = '';
             }
 
             $facturas[] = $row;

@@ -38,6 +38,21 @@ $controllerPath = '../controllers/';
 
 $controllerPath .= 'CompraFacturaProdController.php';
 
+
+/**
+ * Reglas generales que se aplican a todos los ajustes de todas las facturas
+ * Caso 1, Costo Factura es Mayor que Precio Lista
+ * Caso 2, Costo Factura es igual que Precio Lista
+ * Caso 3, Costo Factura es Mayor que Costo Pactado, pero no suficiente para que encaje un descuento.
+ * Caso 4, Costo Factura es Similar a Costo Pactado
+ * Caso 5, Costo Factura es Mayor que Costo Ingreso
+ * Caso 6, Casto Factura es Similar a Costo Ingreso
+ * Caso 7, Costo Factura es Menor que Costo Ingreso
+ */
+
+
+
+
 if (is_file($controllerPath)) {
     require_once $controllerPath;
 }
@@ -61,21 +76,29 @@ function calculaAjustePrecioLista($precio_lista, $costo_unitario_factura, $canti
     }
 }
 
-function calcularAjustesDescuentosAntesCP($descuentoAntesCP, $precio_lista, $cantidad_facturada, $cantidad_rechazada) {
-    return ($descuentoAntesCP / 100) * $precio_lista * ($cantidad_facturada - $cantidad_rechazada);
+function calcularAjustesDescuentosAntesCP($descuentoAntesCP, $precio_lista, $cantidad_facturada, $cantidad_rechazada, $costo_factura) {
+    // Aqui vamos a verificar un par de reglas mas:
+    //Antes verificamos que el costo_factura sea mayor o igual que el precio_lista
+    if (round($costo_factura, 2) >= $precio_lista) {
+        return ($descuentoAntesCP / 100) * $precio_lista * ($cantidad_facturada - $cantidad_rechazada);
+    } else {
+        return 0;
+    }
 }
 
-function calcularAjustesDescuentosDespCP($descuentoDespCP, $precio_pactado, $cantidad_facturada, $cantidad_rechazada) {
-    return ($descuentoDespCP / 100) * $precio_pactado * ($cantidad_facturada - $cantidad_rechazada);
+function calcularAjustesDescuentosDespCP($descuentoDespCP, $precio_pactado, $cantidad_facturada, $cantidad_rechazada, $costo_factura, $costo_pactado) {
+    //Igualmente verificamos que el costo_factura sea mayor o igual que el precio_pactado o tambien el costo_factura sea mayoy o igual al costo_pactado
+    if (round($costo_factura, 2) >= $precio_pactado || round($costo_factura, 2) >= $costo_pactado) {
+        return ($descuentoDespCP / 100) * $precio_pactado * ($cantidad_facturada - $cantidad_rechazada);
+    } else {
+        return 0;
+    }   
 }
 
 
-function ajustePactadoExtra($suma_ajustes, $costo_unitario_factura, $precio_pactado, $cantidad_facturada, $cantidad_rechazada) {
-    // Sumar los valores del array $ajustes (P2:S2)
-     
-
-    // Verificar la condición
-    if ($suma_ajustes == 0 && $costo_unitario_factura > $precio_pactado) {
+function ajustePactadoExtra($suma_ajustes, $costo_unitario_factura, $precio_pactado, $cantidad_facturada, $cantidad_rechazada, $costo_ingreso_pactado) {
+    // Verificar la condición ademas el costo_unitario_factura debe ser mayor que el precio_pactado
+    if ($suma_ajustes == 0 && $costo_unitario_factura > $precio_pactado && $costo_unitario_factura > $costo_ingreso_pactado) {
         return ($costo_unitario_factura - $precio_pactado) * ($cantidad_facturada - $cantidad_rechazada);
     } else {
         return 0;
@@ -83,8 +106,8 @@ function ajustePactadoExtra($suma_ajustes, $costo_unitario_factura, $precio_pact
 }
 
 function calculaAjusteIngresoExtra($suma_ajustes,$suma_descuentos_despues_cp, $costo_unitario_factura, $costo_ingreso_pactado, $cantidad_facturada, $cantidad_rechazada) {
-    // Verificar la condición
-    if ($suma_ajustes == 0 && $suma_descuentos_despues_cp == 0 && $costo_unitario_factura > $costo_ingreso_pactado) {
+    // Verificar la condición ademas el costo_unitario_factura debe ser mayor o igual que el costo_ingreso_pactado
+    if ($suma_ajustes == 0 && $suma_descuentos_despues_cp == 0 && $costo_unitario_factura > $costo_ingreso_pactado && $costo_unitario_factura > 0) {
         return ($costo_unitario_factura - $costo_ingreso_pactado) * ($cantidad_facturada - $cantidad_rechazada);
     } else {
         return 0;
@@ -118,13 +141,13 @@ function ajusteCI(){
         $cabeceras2[] = $descuento['nombre'];
         $nombreAjustesDesp[] = 'Ajuste'.$descuento['nombre'];
     }
-    $cabeceras3 = array('Costo Ingreso Pactado', 'Costo Ingreso Factura', 'Cantidad Facturada', 'Cantidad Rechazada', 'Subtotal Factura', 'Ajuste Precio Lista');
+    $cabeceras3 = array('Costo Ingreso Pactado', 'Costo Ingreso Factura', 'Cantidad Facturada', 'Subtotal Factura', 'Cantidad Rechazada', 'Ajuste Rechazo', 'Subtotal Despues Rechazos', 'Ajuste Precio Lista');
     $cabeceras3 = array_merge($cabeceras3, $nombreAjustesAntes);
     $cabeceras3 = array_merge($cabeceras3, $nombreAjustesDesp);
 
 
 
-    $cabeceras4 = array('Ajuste Rechazo', 'Ajuste Pactado Extra', 'Ajuste Ingreso Extra', 'Ajuste Total');
+    $cabeceras4 = array( 'Ajuste Pactado Extra', 'Ajuste Ingreso Extra', 'Ajuste Total');
     $cabeceras = array_merge($cabeceras1, $cabeceras2, $cabeceras3, $cabeceras4);
 
     //Utlizando las cabeceras definimos el modelo base de 1 producto para calcular los ajustes
@@ -148,8 +171,10 @@ function ajusteCI(){
         'costo_ingreso_pactado' => 0,
         'costo_ingreso_factura' => 0,
         'cantidad_facturada' => 0,
-        'cantidad_rechazada' => 0,
         'subtotal_factura' => 0,
+        'cantidad_rechazada' => 0,
+        'ajuste_rechazo' => 0,
+        'subtotal_despues_rechazos' => 0,
         'ajuste_precio_lista' => 0
     );
 
@@ -161,7 +186,6 @@ function ajusteCI(){
     }
 
     $modeloProducto4 = array(
-        'ajuste_rechazo' => 0,
         'ajuste_pactado_extra' => 0,
         'ajuste_ingreso_extra' => 0,
         'ajuste_total' => 0
@@ -182,6 +206,13 @@ function ajusteCI(){
         $modeloProducto['costo_unitario_factura'] = $producto['costoFactura'];
         //Calculamos la diferencia
         $modeloProducto['dif'] = ($modeloProducto['costo_unitario_factura'] - $modeloProducto['precio_pactado'])/$modeloProducto['precio_lista']*100;
+
+        //Verificamos que la diferencia sea 0 para evitar notacion cientifica, por lo que se iguala a 0
+        if ($modeloProducto['dif'] < 0.0001 OR $modeloProducto['dif'] > -0.0001) {
+            $modeloProducto['dif'] = 0;
+        }
+
+
         //Llenamos los ajustes antes de CP
         foreach ($response['descuentosAntesCP'] as $descuento) {
 
@@ -223,7 +254,7 @@ function ajusteCI(){
         foreach ($response['descuentosAntesCP'] as $descuento) {
             foreach ($producto['descuentosAntesCP'] as $descuentoProducto) {
                 if ($descuentoProducto['nombre'] == $descuento['nombre']) {
-                    $modeloProducto['Ajuste'.$descuento['nombre']] = calcularAjustesDescuentosAntesCP($descuentoProducto['tasa'], $modeloProducto['precio_lista'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada']);
+                    $modeloProducto['Ajuste'.$descuento['nombre']] = calcularAjustesDescuentosAntesCP($descuentoProducto['tasa'], $modeloProducto['precio_lista'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada'], $modeloProducto['costo_unitario_factura']);
                     // echo "El Valor de este ajuste es: ".$modeloProducto['Ajuste'.$descuento['nombre']]." por que: ".$descuentoProducto['tasa']."% de ".$modeloProducto['precio_lista']." * (".$modeloProducto['cantidad_facturada']." - ".$modeloProducto['cantidad_rechazada'].")<br>";
                     $sumaAjustes += $modeloProducto['Ajuste'.$descuento['nombre']];
                     // echo "Valor de la suma de ajustes: ".$sumaAjustes."<br>";
@@ -235,15 +266,17 @@ function ajusteCI(){
         foreach ($response['descuentosDespCP'] as $descuento) {
             foreach ($producto['descuentosDespCP'] as $descuentoProducto) {
                 if ($descuentoProducto['nombre'] == $descuento['nombre']) {
-                    $modeloProducto['Ajuste'.$descuento['nombre']] = calcularAjustesDescuentosDespCP($descuentoProducto['tasa'], $modeloProducto['precio_pactado'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada']);
+                    $modeloProducto['Ajuste'.$descuento['nombre']] = calcularAjustesDescuentosDespCP($descuentoProducto['tasa'], $modeloProducto['precio_pactado'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada'], $modeloProducto['costo_unitario_factura'], $modeloProducto['costo_ingreso_pactado']);
                     $sumaAjustesOff += $modeloProducto['Ajuste'.$descuento['nombre']];
                 }
             }
         }
+        //Calculamos subtotal despues de rechazos
+        $modeloProducto['subtotal_despues_rechazos'] = ($modeloProducto['cantidad_facturada'] - $modeloProducto['cantidad_rechazada']) * $modeloProducto['costo_unitario_factura'];
         //Calculamos ajuste rechazo
         $modeloProducto['ajuste_rechazo'] = $modeloProducto['cantidad_rechazada'] * $modeloProducto['costo_unitario_factura'];
         //Calculamos ajuste pactado extra
-        $modeloProducto['ajuste_pactado_extra'] = ajustePactadoExtra($sumaAjustes, $modeloProducto['costo_unitario_factura'], $modeloProducto['precio_pactado'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada']);
+        $modeloProducto['ajuste_pactado_extra'] = ajustePactadoExtra($sumaAjustes, $modeloProducto['costo_unitario_factura'], $modeloProducto['precio_pactado'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada'], $modeloProducto['costo_ingreso_pactado']);
         //Calculamos ajuste ingreso extra
         $modeloProducto['ajuste_ingreso_extra'] = calculaAjusteIngresoExtra($sumaAjustes, $sumaAjustesOff, $modeloProducto['costo_unitario_factura'], $modeloProducto['costo_ingreso_pactado'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada']);
         //Calculamos ajuste total
@@ -362,7 +395,15 @@ function ajusteCP(){
         $modeloProducto['precio_pactado'] = $producto['costoPactado'];
         $modeloProducto['costo_unitario_factura'] = $producto['costoFactura'];
         //Calculamos la diferencia
-        $modeloProducto['dif'] = ($modeloProducto['costo_unitario_factura'] - $modeloProducto['precio_pactado'])/$modeloProducto['precio_lista']*100;
+        // $modeloProducto['dif'] = round(($modeloProducto['costo_unitario_factura'] - $modeloProducto['precio_pactado']) / $modeloProducto['precio_lista'] * 100, 2);
+        // Cálculo de la diferencia, igual que antes
+        $modeloProducto['dif'] = round(($modeloProducto['costo_unitario_factura'] - $modeloProducto['precio_pactado']) / $modeloProducto['precio_lista'] * 100, 2);
+        // Asegurarse de que sea interpretado como texto en Excel y evitar notación científica
+
+        //Si el numero es muy quequeño, se iguala a 0 para evitar notacion cientifica
+        if ($modeloProducto['dif'] < 0.000001 OR $modeloProducto['dif'] > -0.000001) {
+            $modeloProducto['dif'] = 0;
+        }
         //Llenamos los ajustes antes de CP
         foreach ($response['descuentosAntesCP'] as $descuento) {
             //Recorremos los descuentos antes de CP del producto
@@ -398,13 +439,13 @@ function ajusteCP(){
         foreach ($response['descuentosAntesCP'] as $descuento) {
             foreach ($producto['descuentosAntesCP'] as $descuentoProducto) {
                 if ($descuentoProducto['nombre'] == $descuento['nombre']) {
-                    $modeloProducto['Ajuste'.$descuento['nombre']] = calcularAjustesDescuentosAntesCP($descuentoProducto['tasa'], $modeloProducto['precio_lista'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada']);
+                    $modeloProducto['Ajuste'.$descuento['nombre']] = calcularAjustesDescuentosAntesCP($descuentoProducto['tasa'], $modeloProducto['precio_lista'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada'], $modeloProducto['costo_unitario_factura']);
                     $sumaAjustes += $modeloProducto['Ajuste'.$descuento['nombre']];
                 }
             }
         }
         $modeloProducto['ajuste_rechazo'] = $modeloProducto['cantidad_rechazada'] * $modeloProducto['costo_unitario_factura'];
-        $modeloProducto['ajuste_pactado_extra'] = ajustePactadoExtra($sumaAjustes, $modeloProducto['costo_unitario_factura'], $modeloProducto['precio_pactado'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada']);
+        $modeloProducto['ajuste_pactado_extra'] = ajustePactadoExtra($sumaAjustes, $modeloProducto['costo_unitario_factura'], $modeloProducto['precio_pactado'], $modeloProducto['cantidad_facturada'], $modeloProducto['cantidad_rechazada'], $modeloProducto['costo_ingreso_pactado']);
         $modeloProducto['ajuste_total'] = $modeloProducto['ajuste_rechazo'] + $modeloProducto['ajuste_pactado_extra'] + $sumaAjustes;
         $data[] = $modeloProducto;
         $modeloProducto = limpiaModelo($modeloProducto);

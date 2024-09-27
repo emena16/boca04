@@ -56,63 +56,80 @@ table.tablaPequena tbody td {
 
 
 
-<div class="page-header layout-top-spacing title-header">
+<!-- <div class="page-header layout-top-spacing title-header">
     <div class="pge-title" style="margin-left: 3.5%;">
         <h3 class="ml-4">Entrada por Proveedores</h3>
     </div>
-</div>
+</div> -->
 
 
-<div class="card card-principal">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4 col-sm-6">
-                <label for="lblProveedor">Proveedor:</label>
-                <select class="form-control" id="proveedor" name="proveedor">
-                    <option selected disabled value="0">Selecciona un proveedor</option>
-                    <?php
-                    $compra = new Compra();
-                    $proveedores = $compra->getProveedoresConOrdenes();
-                    foreach ($proveedores as $proveedor) {
-                        echo '<option value="'.$proveedor['id'].'">'.$proveedor['nombre'].'</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <label for="lblBodega">Bodega:</label>
-                <select class="form-control" id="bodega" name="bodega">
-                    <option selected disabled value="0">Selecciona un proveedor</option>
-                </select>
-            </div>
+<div style="padding-left: 80px; padding-right: 10px;" >
+    <div class="container-fluid">
+        <div class="page-title" style="float: none;">
+            <h3>Entrada por proveedores</h3>
         </div>
-        
+        <!-- Aqui vamos a pintar todo lo que se requiera en la vista -->
+        <div class="statbox widget box box-shadow widget-content-area p-3  mt-3">
 
-        <!-- <div class="row">
-            <div class="col-md-4">
-                <a href="validaEntradas.php">
-                    <button class="mt-lg-4 btn btn-info btn-lg"><i style=" color: #f6fcfb;" data-feather="search"></i> Consulta Avanzada </button>
-                </a>
-            </div>
-        </div> -->
-
-        <div class="row">
-            <div class="col-md-12"><div class="page-header layout-top-spacing title-header mt-lg-4">
-                <div class="pge-title"> <br><br><br>
-                    <h5 id="tituloTabla"></h5>
+            <div class="row mt-3">
+                <div class="col-md-4 col-sm-6">
+                    <label for="lblProveedor">Proveedor:</label>
+                    <select class="form-control" id="proveedor" name="proveedor">
+                        <option selected disabled value="0">Selecciona un proveedor</option>
+                        <?php
+                        $compra = new Compra();
+                        $proveedores = $compra->getProveedoresConOrdenes();
+                        foreach ($proveedores as $proveedor) {
+                            echo '<option value="'.$proveedor['id'].'">'.$proveedor['nombre'].'</option>';
+                        }
+                        ?>
+                    </select>
                 </div>
-            </div></div>
-        </div>
-        <div class="row">
-            
-            <div id="divTablaEntradas" class="col-md-12 col-lg-12">
-                <!-- Aqui vamos a pintar el datatable con las ordenes de compra -->
+                <div class="col-md-4 col-sm-6">
+                    <label for="lblBodega">Bodega:</label>
+                    <select class="form-control" id="bodega" name="bodega">
+                        <option selected disabled value="0">Selecciona un proveedor</option>
+                    </select>
+                </div>
             </div>
-        </div>
+            
+
+            <!-- <div class="row">
+                <div class="col-md-4">
+                    <a href="validaEntradas.php">
+                        <button class="mt-lg-4 btn btn-info btn-lg"><i style=" color: #f6fcfb;" data-feather="search"></i> Consulta Avanzada </button>
+                    </a>
+                </div>
+            </div> --> 
 
 
-    </div> <!-- fin card-body -->
-</div> <!-- fin card-principal -->
+            <!-- Div para mostrar el mensaje de messageAlert -->
+            <div class="row mt-lg-4">
+                <div class="col-md-12 col-sm-12">
+                    <div class="row justify-content-center mt-2">
+                        <div id="divMessage" class="col-md-8"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12"><div class="page-header layout-top-spacing title-header mt-lg-4">
+                    <div class="pge-title"> <br>
+                        <h5 id="tituloTabla"></h5>
+                    </div>
+                </div></div>
+            </div>
+            <div class="row">
+                <div id="divTablaEntradas" class="col-md-12 col-lg-12">
+                    <!-- Aqui vamos a pintar el datatable con las ordenes de compra -->
+                </div>
+            </div>
+
+        </div> <!-- fin widget-content-area -->
+    </div> <!-- fin container-fluid -->
+</div> <!-- fin padding-left  este div mantiene la vista centrada, lejos del menu lateral -->
+
+
 
 
 <!-- Creamos un modal para ingresar las facturas de la orden de compra seleccionada -->
@@ -132,11 +149,11 @@ table.tablaPequena tbody td {
                     </div>
                     <div class="col-md-4">
                         <label for="lblFechaFactura">Fecha Factura:</label>
-                        <input type="date" class="form-control" id="fechaFactura" name="fechaFactura">
+                        <input type="date" class="form-control" id="fechaFactura" name="fechaFactura" max="<?php echo date('Y-m-d'); ?>">
                     </div>
                     <div class="col-md-4">
                         <label for="lblFechaLlegada">Fecha Llegada:</label>
-                        <input type="date" class="form-control" id="fechaLlegada" name="fechaLlegada">
+                        <input type="date" class="form-control" id="fechaLlegada" name="fechaLlegada" max="<?php echo date('Y-m-d'); ?>">
                     </div>
                 </div>
                 <div class="row mt-lg-4">
@@ -304,6 +321,7 @@ $rutaArchivo = file_exists($ruta."sys/hf/pie_v3.php") ? $ruta."sys/hf/pie_v3.php
 include $rutaArchivo;
 ?>
 
+<script src="js/functions.js"></script>
 <script>
     $(document).ready(function() {
         // Inicializamos el datatable
@@ -475,7 +493,8 @@ include $rutaArchivo;
                     var response = JSON.parse(response);
                     if(response.status == 1) {
                         //Si la factura se agrego correctamente, mostramos un mensaje de alerta
-                        alert('La factura se ha agregado correctamente');
+                        // alert('La factura se ha agregado correctamente');
+                        messageAlert('La factura se ha agregado correctamente', 'success', false);
                         //Cerramos el modal
                         $('#modalIngresarFactura').modal('hide');
                         //Recargamos la vista de productos restantes
@@ -501,7 +520,68 @@ include $rutaArchivo;
             var fecha_factura = $('#fechaFactura').val();
             var fecha_llegada = $('#fechaLlegada').val();
             var idFactura = $('#uuidFactura').attr('fact');
-            
+
+            //Creamos una variable llamada "hoy" que sera la fecha de hoy para comparar con la fecha de llegada
+            var hoy = <?= json_encode(date('Y-m-d')); ?>;
+            //Verificamos que la factura tenga un uuid y que no existe en la db
+            if(uuid == '') {
+                alert('El UUID de la factura no puede estar vacío');
+                return false;
+            }
+            //Verificamos que la factura tenga una fecha de factura
+            if(fecha_factura == '') {
+                alert('La fecha de la factura no puede estar vacía');
+                return false;
+            }
+            //Verificamos que la factura tenga una fecha de llegada
+            if(fecha_llegada == '') {
+                alert('La fecha de llegada no puede estar vacía');
+                return false;
+            }
+
+            //La fecha de llegada no puede ser menor a la fecha de factura
+            // if(fecha_llegada < fecha_factura) {
+            //     alert('La fecha de llegada no puede ser menor a la fecha de factura');
+            //     return false;
+            // }
+
+            //La fecha de llegada no puede ser mayor a la fecha de hoy
+            if(fecha_llegada > hoy) {
+                alert('La fecha de llegada no puede ser mayor a la fecha de hoy');
+                return false;
+            }
+
+            var uuidOriginal = $(this).attr('uuid');
+            //Si el UUID de la factura es diferente al original, verificamos que no exista en la db
+            if(uuid != uuidOriginal) {
+                //Llamamos al servicio para verificar si el UUID de la factura ya existe
+                $.ajax({
+                    url: 'services/mainService.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'checkUuid',
+                        controller: "CompraFactura",
+                        args: { 
+                            'uuid': uuid
+                        }
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        //Parseamos el JSON recibido
+                        var response = JSON.parse(response);
+                        if(response.exists == 1) {
+                            //Si el UUID de la factura ya existe, mostramos un mensaje de alerta
+                            alert('El UUID de la factura ya existe');
+                            return false;
+                        }
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            }
+
             var productos = [];
             var factura = {
                 'id_compra': id_compra,
@@ -516,6 +596,12 @@ include $rutaArchivo;
                 if(!$(this).prop('disabled')) {
                     var id_prod = $(this).attr('id').replace('caducidad', '');
                     var caducidad = $(this).val();
+                    //La fecha de caducidad no puede ser menos a hoy
+                    if(caducidad < hoy) {
+                        alert('Por favor, verifica la fecha de caducidad de los productos');
+                        return false;
+                    }
+                    console.log("Caducidad: " + caducidad + " Hoy: " + hoy);
                     var unidadesFacturadas = $('#unidadesFacturadas'+id_prod).val();
                     var unidadesRechazadas = $('#unidadesRechazadas'+id_prod).val();
                     var costo_unitario = $('#costo_unitario'+id_prod).val();
@@ -544,13 +630,14 @@ include $rutaArchivo;
                     }
                 },
                 success: function(response) {
-                    console.log('Respuesta del servicio de agregar factura');
+                    console.log('Respuesta del servicio de actualizar factura');
                     // console.log(response);
                     //Parseamos el JSON para obtener el valor de exists
                     var response = JSON.parse(response);
                     if(response.status == 1) {
                         //Si la factura se agrego correctamente, mostramos un mensaje de alerta
-                        alert('La factura se ha actualizado correctamente');
+                        // alert('La factura se ha actualizado correctamente');
+                        messageAlert('La factura se ha actualizado correctamente', 'success', false);
                         //Cerramos el modal
                         $('#modalIngresarFactura').modal('hide');
                         //Recargamos la vista de productos restantes
@@ -650,6 +737,7 @@ include $rutaArchivo;
                     //Actualizamos el datatable en caso de no estar inicializado
                     if (!$.fn.DataTable.isDataTable('#tablaProductosFacturaAlmacen')) {
                         $('#tablaProductosFacturaAlmacen').DataTable( {
+                            caption: 'Productos de la factura',
                             dom: 'frti',
                             searching: false,
                             columnDefs: [
@@ -775,7 +863,6 @@ include $rutaArchivo;
             $('#btnActualizarFactura').show();
             $('#btnEnviarFactura').hide();
             
-            
             //Limpiamos la tabla de productos de la factura
             $('#tablaProductosFactura tbody').html('');
             //Mostramos el modal obligando al usuario a enviar el mensaje y confirmar que se ha hecho
@@ -808,17 +895,17 @@ include $rutaArchivo;
                         //Quitamos el signo de pesos y los espacios en blanco del costo unitario
                         producto.costo_unitario = producto.costo_unitario.replace(/[$\s]/g, '');
                         var fila = '<tr id="'+producto.id_prod+'" >';
-                        fila += '<td>'+producto.comercial+'<input type="hidden" id="costo_unitario'+producto.id_prod+'" value="'+producto.costo_unitario+'"><input type="hidden" id="id_prod_compra'+producto.id_prod+'" value="'+producto.id_prod_compra+'"></td>';
-                        fila += '<td>'+producto.cod_prov+'</td>';
-                        fila += '<td>'+producto.ean+'</td>';
+                        fila += '<td class="dt-right">'+producto.comercial+'<input type="hidden" id="costo_unitario'+producto.id_prod+'" value="'+producto.costo_unitario+'"><input type="hidden" id="id_prod_compra'+producto.id_prod+'" value="'+producto.id_prod_compra+'"></td>';
+                        fila += '<td class="dt-right">'+producto.cod_prov+'</td>';
+                        fila += '<td class="dt-right">'+producto.ean+'</td>';
                         // fila += '<td>'+producto.costo_subtotal_bruto+'</td>';
-                        fila += '<td><input type="number" class="dt-right uFacturadas" id="unidadesFacturadas'+producto.id_prod+'" name="unidadesFacturadas'+producto.id_prod+'" value="'+ (producto.total_cantidad_aceptada+producto.total_cantidad_rechazada) +'" style="width: 80px;"></td>';
-                        fila += '<td><input type="number" class="dt-right uRechazadas" id="unidadesRechazadas'+producto.id_prod+'" name="unidadesRechazadas'+producto.id_prod+'" value="'+ producto.total_cantidad_rechazada +'" style="width: 80px;"></td>';
+                        fila += '<td class="dt-right"><input type="number" class="dt-right uFacturadas" id="unidadesFacturadas'+producto.id_prod+'" name="unidadesFacturadas'+producto.id_prod+'" value="'+ (producto.total_cantidad_aceptada+producto.total_cantidad_rechazada) +'" style="width: 80px;"></td>';
+                        fila += '<td class="dt-right"><input type="number" class="dt-right uRechazadas" id="unidadesRechazadas'+producto.id_prod+'" name="unidadesRechazadas'+producto.id_prod+'" value="'+ producto.total_cantidad_rechazada +'" style="width: 80px;"></td>';
                         // Si caducidad no esta vacia la escribimos
                         if(producto.caducidad != '') {
-                            fila += '<td><input type="date" class="dt-right" id="caducidad'+producto.id_prod+'" name="caducidad'+producto.id_prod+'" value="'+producto.caducidad+'"></td>';
+                            fila += '<td class="dt-right"><input type="date" class="dt-right" id="caducidad'+producto.id_prod+'" name="caducidad'+producto.id_prod+'" value="'+producto.caducidad+'" min="<?=date('Y-m-d');?>"></td>';
                         } else {
-                            fila += '<td><input disabled type="date" class="dt-right" id="caducidad'+producto.id_prod+'" name="caducidad'+producto.id_prod+'"></td>';
+                            fila += '<td class="dt-right"><input disabled type="date" class="dt-right" id="caducidad'+producto.id_prod+'" name="caducidad'+producto.id_prod+'"></td>';
                         }
                         fila += '</tr>';
                         $('#tablaProductosFactura tbody').append(fila);
@@ -853,12 +940,15 @@ include $rutaArchivo;
                     //Agregamos el atributo fact a #uuidFactura para poder comparar el UUID de la factura
                     $('#uuidFactura').attr('fact', factura.id);
                     //Desactivamos el input de UUID
-                    $('#uuidFactura').attr('disabled', true);
+                    // $('#uuidFactura').attr('disabled', true);
                     $('#fechaFactura').val(factura.fecha);
                     $('#fechaLlegada').val(factura.fecha_llegada);
                     
                     //Actualizamos el titulo del modal
                     $('#tituloModal').text('Editar Factura: '+factura.uuid);
+                    //Agregamos el atributo uuid al boton de actualizar factura
+                    $('#btnActualizarFactura').attr('uuid', factura.uuid);
+
                     feather.replace();
                 },
                 error: function(error) {
@@ -871,6 +961,24 @@ include $rutaArchivo;
         //Creamos un evento que verifique el UUID de la factura no exista en la base de datos
         $('#uuidFactura').change(function() {
             var uuid = $(this).val();
+
+            //Verifacamos si el btnActualizarFactura esta activo para no hacer la validacion
+            if($('#btnActualizarFactura').is(':visible')) {
+                console.log('El boton de actualizar factura esta visible');
+                //Obtenemos el UUID original de la factura
+                var uuidOriginal = $('#btnActualizarFactura').attr('uuid');
+                //Si el UUID de la factura es diferente al original, verificamos que no exista en la db
+                if(uuid == uuidOriginal) {
+                    $('#uuidFactura').removeClass('is-invalid');
+                    $('#uuidFactura').next().remove();
+                    console.log('El UUID es igual al original');
+                    //En caso de que el UUID no exista, habilitamos el boton de agregar factura
+                    $('#modalIngresarFactura button').attr('disabled', false);
+                    
+                    return false;
+                }
+            }
+
             $.ajax({
                 url: 'services/mainService.php',
                 type: 'POST',
@@ -886,6 +994,10 @@ include $rutaArchivo;
                     //Parseamos el JSON para obtener el valor de exists
                     var response = JSON.parse(response);
                     if(response.exists == 1) {
+                        //Limpiamos por si acaso ya habia un mensaje previo de error
+                        $('#uuidFactura').removeClass('is-invalid');
+                        $('#uuidFactura').next().remove();
+
                         $('#uuidFactura').addClass('is-invalid');
                         //Agregamos un mensaje de error con un input invalid-feedback
                         $('#uuidFactura').after('<div class="invalid-feedback">El UUID de la factura ya existe en la base de datos</div>');
@@ -1003,6 +1115,7 @@ include $rutaArchivo;
                     
                     //Llenamos la tabla con los productos de la orden de compra
                     if(data.length > 0) {
+                        var hoy = new Date();
                         $.each(data, function(index, producto) {
                             //Si la cantidad restante de producto.cant_restante es < 0, saltamos a la siguiente iteración
                             if(producto.cant_restante <= 0) {
@@ -1012,12 +1125,12 @@ include $rutaArchivo;
                             producto.costo_unitario = producto.costo_unitario.replace(/[$\s]/g, '');
                             var fila = '<tr id="'+producto.id_prod+'" >';
                             fila += '<td>'+producto.comercial+'<input type="hidden" id="costo_unitario'+producto.id_prod+'" value="'+producto.costo_unitario+'"><input type="hidden" id="id_prod_compra'+producto.id_prod+'" value="'+producto.id_prod_compra+'"></td>';
-                            fila += '<td>'+producto.cod_prov+'</td>';
-                            fila += '<td>'+producto.ean+'</td>';
+                            fila += '<td class="dt-right">'+producto.cod_prov+'</td>';
+                            fila += '<td class="dt-right">'+producto.ean+'</td>';
                             // fila += '<td>'+producto.costo_subtotal_bruto+'</td>';
-                            fila += '<td><input type="number" class="dt-right uFacturadas" id="unidadesFacturadas'+producto.id_prod+'" name="unidadesFacturadas'+producto.id_prod+'" value="'+producto.cant_restante+'" style="width: 80px;"></td>';
-                            fila += '<td><input type="number" class="dt-right uRechazadas" id="unidadesRechazadas'+producto.id_prod+'" name="unidadesRechazadas'+producto.id_prod+'" value="0" style="width: 80px;"></td>';
-                            fila += '<td><input type="date" class="dt-right" id="caducidad'+producto.id_prod+'" name="caducidad'+producto.id_prod+'"></td>';
+                            fila += '<td class="dt-right"><input type="number" class="dt-right uFacturadas" id="unidadesFacturadas'+producto.id_prod+'" name="unidadesFacturadas'+producto.id_prod+'" value="'+producto.cant_restante+'" style="width: 80px;"></td>';
+                            fila += '<td class="dt-right"><input type="number" class="dt-right uRechazadas" id="unidadesRechazadas'+producto.id_prod+'" name="unidadesRechazadas'+producto.id_prod+'" value="0" style="width: 80px;"></td>';
+                            fila += '<td class="dt-right"><input type="date" class="dt-right" id="caducidad'+producto.id_prod+'" name="caducidad'+producto.id_prod+'" min="<?=date('Y-m-d');?>"></td>';
                             fila += '</tr>';
                             $('#tablaProductosFactura tbody').append(fila);
                         });
@@ -1181,7 +1294,7 @@ include $rutaArchivo;
                     var response = JSON.parse(response);
                     if(response.status == 1) {
                         //Si recibimos el true la orden se he confirmado por lo que mostramos un mensaje de alerta de bootstrap
-                        $('#alertaCierreOrden').removeClass('alert-warning').addClass('alert-success').html('<strong><h5>Éxito</h5></strong><p> La orden de compra se ha cerrado correctamente.<p><div id="alertCounterTime"></div>');
+                        $('#alertaCierreOrden').removeClass('alert-warning').addClass('alert-success').html('<strong><h5>Hecho</h5></strong><p> La orden de compra se ha cerrado correctamente.<p><div id="alertCounterTime"></div>');
                         //Ocultamos el boton de confirmar cierre de orden
                         $('#btnCerrarCompra').hide();
                         //Mostramos el boton de btnProcessConfirmClose
@@ -1269,7 +1382,8 @@ include $rutaArchivo;
             tabla += '<th>EAN</th>';
             tabla += '<th>Producto</th>';
             tabla += '<th>Cantidad Solicitada</th>';
-            tabla += '<th>Cantidad Ingresada</th>';
+            tabla += '<th>Cantidad Facturada</th>';
+            tabla += '<th>Cantidad Rechazada</th>';
             tabla += '<th>Cantidad Restante</th>';
             tabla += '</tr>';
             tabla += '</thead>';
@@ -1299,6 +1413,7 @@ include $rutaArchivo;
                             tabla += '<td class="">'+producto.comercial+'</td>';
                             tabla += '<td class="dt-right">'+producto.cant_solicitada+'</td>';
                             tabla += '<td class="dt-right">'+producto.cant_ingresada+'</td>';
+                            tabla += '<td class="dt-right">'+producto.cant_rechazada+'</td>';
                             tabla += '<td class="dt-right">'+producto.cant_restante+'</td>';
                             tabla += '</tr>';
                         });
@@ -1384,7 +1499,7 @@ include $rutaArchivo;
                         tabla += '<td class="dt-right">'+parseFloat(factura.tRechazado).toFixed(2)+'</td>';
                         tabla += '<td>'+
                                 (factura.ingreso_almacen == 0 ?
-                                    '<button class="btn btn-info btn-sm ml-2 mt-2 btnEditarFactura" id="'+factura.id+'"><i style=" color: #f6fcfb;" data-feather="edit"></i> Editar</button>'+
+                                    '<button class="btn btn-info btn-sm ml-2 mt-2 btnEditarFactura" uuid="'+factura.uuid+'" id="'+factura.id+'"><i style=" color: #f6fcfb;" data-feather="edit"></i> Editar</button>'+
                                     '<button class="btn btn-success btn-sm ml-2 mt-2 btnIngresarFactAlmacen" id="'+factura.id+'"><i style=" color: #f6fcfb;" data-feather="edit"></i> Ingresar a almacén</button>' :
                                     '<button class="btn btn-info btn-sm ml-lg-4 mt-2" disabled><i style=" color: #f6fcfb;" data-feather="check-square"></i>&nbsp; Ingresada</button>')
                                 '</td>';
@@ -1481,15 +1596,14 @@ include $rutaArchivo;
                     tabla += '</tr>';
                     tabla += '</thead>';
                     tabla += '<tbody>';
-                    
                     $.each(data.ordenesCompra, function(index, compra) {
                         tabla += '<tr>';
-                        tabla += '<td>'+compra.id+'</td>';
+                        tabla += '<td class="dt-right">'+compra.id+'</td>';
                         tabla += '<td>'+compra.nombre_proveedor+'</td>';
                         tabla += '<td>'+compra.nombre_bodega+'</td>';
-                        tabla += '<td>'+compra.total_esperado+'</td>';
-                        tabla += '<td>'+compra.total+'</td>';
-                        tabla += '<td>'+compra.alta+'</td>';
+                        tabla += '<td class="dt-right">'+compra.total_esperado+'</td>';
+                        tabla += '<td class="dt-right">'+compra.total+'</td>';
+                        tabla += '<td class="dt-right">'+compra.alta+'</td>';
                         tabla += '<td>'+compra.facturas+'</td>';
                         tabla += '<td>'+compra.btn+'</td>';
                         tabla += '</tr>';
@@ -1512,7 +1626,8 @@ include $rutaArchivo;
                     $('#divTablaEntradas').html(tabla);
 
                     // Inicializamos el datatable
-                    $('#tablaEntradas').DataTable( {
+                    $('#tablaEntradas').DataTable({
+                        caption: 'Ordenes de Compra',
                         dom: 'frti',
                         language: {
                             "url": "js/spanish.js"
@@ -1524,11 +1639,11 @@ include $rutaArchivo;
                     //Actualizamos los iconos de feather
                     feather.replace();
                     //Actualizamos el titulo de la tabla
-                    $('#tituloTabla').html('Ordenes de Compra para <u>'+data.razonSocial+'</u>');
+                    $('#tituloTabla').html('');
 
                 } else {
                     //Limipiamos el titulo de la tabla
-                    $('#tituloTabla').html('Ordenes de Compra');
+                    $('#tituloTabla').html('');
                     $('#divTablaEntradas').html('<div class="alert alert-warning">No hay ordenes de compra pendientes para este proveedor en esta bodega</div>');
                 }
             },
